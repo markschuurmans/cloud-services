@@ -7,7 +7,7 @@ const options = {
     definition: {
         openapi: "3.0.0",
         info: {
-            title: "Read service API (Aggregator)",
+            title: "Read service API",
             version: "1.0.0",
         },
         components: {
