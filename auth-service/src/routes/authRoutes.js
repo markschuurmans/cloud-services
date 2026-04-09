@@ -8,7 +8,7 @@ const router = express.Router();
  * @swagger
  * /auth/register:
  *   post:
- *     summary: Registreer een nieuwe gebruiker
+ *     summary: Nieuwe gebruiker registreren
  *     tags: [Authentication]
  *     requestBody:
  *       required: true
@@ -82,7 +82,7 @@ router.post('/login', login);
  * @swagger
  * /auth/profile:
  *   get:
- *     summary: Haal profiel van de ingelogde gebruiker op
+ *     summary: Profiel ophalen van ingelogde gebruiker
  *     tags: [Authentication]
  *     security:
  *       - BearerAuth: []
