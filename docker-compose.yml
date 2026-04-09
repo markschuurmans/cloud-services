@@ -1,0 +1,99 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:6-jammy
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  auth-service:
+    build: 
+      context: ./auth-service
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    environment:
+      - PORT=3001
+      - MONGO_URI=mongodb://mongodb:27017/photo_prestiges_auth
+      - JWT_SECRET=supersecret123
+    depends_on:
+      - mongodb
+
+  register-service:
+    build: 
+      context: ./register-service
+    ports:
+      - "3002:3002"
+    environment:
+      - PORT=3002
+      - MONGO_URI=mongodb://mongodb:27017/photo_prestiges_register
+    depends_on:
+      - mongodb
+
+  target-service:
+    build: 
+      context: ./target-service
+    ports:
+      - "3003:3003"
+    environment:
+      - PORT=3003
+      - MONGO_URI=mongodb://mongodb:27017/photo_prestiges_target
+    volumes:
+      - ./target-service/src/uploads:/usr/src/app/src/uploads
+    depends_on:
+      - mongodb
+
+  score-service:
+    build: 
+      context: ./score-service
+    ports:
+      - "3004:3004"
+    environment:
+      - PORT=3004
+      - MONGO_URI=mongodb://mongodb:27017/photo_prestiges_score
+      - IMAGGA_API_KEY=your_imagga_key
+      - IMAGGA_API_SECRET=your_imagga_secret
+    depends_on:
+      - mongodb
+
+  clock-service:
+    build: 
+      context: ./clock-service
+    ports:
+      - "3005:3005"
+    environment:
+      - PORT=3005
+      - MONGO_URI=mongodb://mongodb:27017/photo_prestiges_clock
+      - REGISTER_SERVICE_URL=http://register-service:3002
+      - MAIL_SERVICE_URL=http://mail-service:3006
+    depends_on:
+      - mongodb
+
+  mail-service:
+    build: 
+      context: ./mail-service
+    ports:
+      - "3006:3006"
+    environment:
+      - PORT=3006
+      - SMTP_HOST=smtp.mailtrap.io
+      - SMTP_USER=your_user
+      - SMTP_PASS=your_pass
+    depends_on:
+      - mongodb
+
+  read-service:
+    build: 
+      context: ./read-service
+    ports:
+      - "3007:3007"
+    environment:
+      - PORT=3007
+      - MONGO_URI=mongodb://mongodb:27017/photo_prestiges_read
+    depends_on:
+      - mongodb
+
+volumes:
+  mongo-data:
