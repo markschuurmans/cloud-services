@@ -97,12 +97,3 @@ export const profile = async (req, res) => {
     res.status(500).json({ error: 'Internal server error fetching user profile' });
   }
 };
-
-export const validate = (req, res) => {
-  // If the request reaches here, it means it already passed the authMiddleware
-  // So standard validation applies and we can safely return the user payload
-  res.status(200).json({
-    valid: true,
-    user: req.user
-  });
-};

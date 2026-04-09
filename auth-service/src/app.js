@@ -7,12 +7,17 @@ import cors from 'cors';
 dotenv.config();
 
 import authRoutes from './routes/authRoutes.js';
+import swaggerUi from 'swagger-ui-express';
+import swaggerSpec from './config/swagger.js';
 
 const app = express();
 
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+// Swagger Documentatie Endpoint
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Basic health check
 app.get('/health', (req, res) => {
