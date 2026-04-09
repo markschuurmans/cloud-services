@@ -64,7 +64,7 @@ export const createSubmission = async (req, res, next) => {
     // Notify Score Service
     const scoreServiceUrl = process.env.SCORE_SERVICE_URL || 'http://localhost:3004';
     try {
-      fetch(`${scoreServiceUrl}/api/scores/evaluate`, {
+      fetch(`${scoreServiceUrl}/api/scores/analyze`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -133,3 +133,18 @@ export const getSubmissions = async (req, res, next) => {
       next(error);
     }
   };
+
+export const getSubmissionById = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const submission = await Submission.findById(id);
+
+    if (!submission) {
+      return res.status(404).json({ error: 'Submission not found.' });
+    }
+
+    return res.status(200).json(submission);
+  } catch (error) {
+    next(error);
+  }
+};

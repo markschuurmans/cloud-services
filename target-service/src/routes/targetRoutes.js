@@ -1,6 +1,6 @@
 import express from 'express';
 import { createTarget, deleteTarget, getTargets, getTargetById } from '../controllers/targetController.js';
-import { createSubmission, deleteSubmission, getSubmissions } from '../controllers/submissionController.js';
+import { createSubmission, deleteSubmission, getSubmissions, getSubmissionById } from '../controllers/submissionController.js';
 import authMiddleware from '../middleware/authMiddleware.js';
 import { upload } from '../config/multer.js';
 
@@ -166,6 +166,26 @@ router.post('/submissions', authMiddleware, upload.single('image'), createSubmis
  *         description: A list of submissions
  */
 router.get('/submissions', getSubmissions);
+
+/**
+ * @swagger
+ * /api/submissions/{id}:
+ *   get:
+ *     summary: Get a specific submission by ID
+ *     tags: [Submissions]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Submission found
+ *       404:
+ *         description: Submission not found
+ */
+router.get('/submissions/:id', getSubmissionById);
 
 /**
  * @swagger
