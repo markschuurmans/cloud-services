@@ -7,9 +7,7 @@ services:
       - mongo-data:/data/db
 
   auth-service:
-    build: 
-      context: ./auth-service
-      dockerfile: Dockerfile
+    build: ./auth-service
     ports:
       - "3001:3001"
     environment:
@@ -20,8 +18,7 @@ services:
       - mongodb
 
   register-service:
-    build: 
-      context: ./register-service
+    build: ./register-service
     ports:
       - "3002:3002"
     environment:
@@ -31,8 +28,7 @@ services:
       - mongodb
 
   target-service:
-    build: 
-      context: ./target-service
+    build: ./target-service
     ports:
       - "3003:3003"
     environment:
@@ -44,8 +40,7 @@ services:
       - mongodb
 
   score-service:
-    build: 
-      context: ./score-service
+    build: ./score-service
     ports:
       - "3004:3004"
     environment:
@@ -57,8 +52,7 @@ services:
       - mongodb
 
   clock-service:
-    build: 
-      context: ./clock-service
+    build: ./clock-service
     ports:
       - "3005:3005"
     environment:
@@ -70,8 +64,7 @@ services:
       - mongodb
 
   mail-service:
-    build: 
-      context: ./mail-service
+    build: ./mail-service
     ports:
       - "3006:3006"
     environment:
@@ -83,8 +76,7 @@ services:
       - mongodb
 
   read-service:
-    build: 
-      context: ./read-service
+    build: ./read-service
     ports:
       - "3007:3007"
     environment:
