@@ -1,23 +1,47 @@
-require('dotenv').config();
-const express = require('express');
-const mongoose = require('mongoose');
+import express from "express";
+import mongoose from "mongoose";
+import dotenv from "dotenv";
+import cors from "cors";
+import swaggerUi from "swagger-ui-express";
+
+import swaggerSpec from "./config/swagger.js";
+import mailRoutes from "./routes/mailRoutes.js";
+import errorHandler from "./middleware/errorHandler.js";
+
+dotenv.config();
 
 const app = express();
+
+app.use(cors());
 app.use(express.json());
 
-app.get('/health', (req, res) => {
-    res.json({ status: 'Mail Service is running' });
+app.get("/health", (req, res) => {
+    res.json({ status: "Mail service is running", timestamp: new Date() });
 });
 
-// Import routes here
-// app.use('/mail', require('./routes/mail'));
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use("/", mailRoutes);
+
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 3006;
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/photo_prestiges_mail';
+const MONGO_URI =
+    process.env.MONGO_URI || "mongodb://localhost:27017/photo_prestiges_mail";
 
-mongoose.connect(MONGO_URI)
+if (!process.env.JWT_SECRET) {
+    console.error("JWT_SECRET is not defined!");
+    process.exit(1);
+}
+
+mongoose
+    .connect(MONGO_URI)
     .then(() => {
-        console.log('Connected to Database');
-        app.listen(PORT, () => console.log(`Mail Service running on port ${PORT}`));
+        console.log("Connected to MongoDB for Mail-Service");
+        app.listen(PORT, () => {
+            console.log(`Mail service is running on port ${PORT}`);
+        });
     })
-    .catch(err => console.error('Database connection failed', err));
+    .catch((err) => {
+        console.error("Database connection failed:", err.message);
+        process.exit(1);
+    });
