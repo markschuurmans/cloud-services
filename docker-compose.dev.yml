@@ -45,7 +45,7 @@ services:
     build:
       context: ./frontend-service
       target: dev
-    command: npm run dev
+    command: sh -c "npm ci && npm run dev"
     volumes:
       - ./frontend-service:/usr/src/app
       - /usr/src/app/node_modules
