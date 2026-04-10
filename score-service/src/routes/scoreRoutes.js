@@ -1,5 +1,5 @@
 import express from 'express';
-import { analyzeScore, getRanking } from '../controllers/scoreController.js';
+import { analyzeScore, getRanking, getScoresByUser, finalizeCompetitionScoring } from '../controllers/scoreController.js';
 import authMiddleware from '../middleware/authMiddleware.js';
 
 const router = express.Router();
@@ -57,4 +57,40 @@ router.post('/scores/analyze', authMiddleware, analyzeScore);
  */
 router.get('/scores/ranking/:compId', getRanking);
 
+/**
+ * @swagger
+ * /api/scores/user/{userId}:
+ *   get:
+ *     summary: Retrieve scores for a specific user
+ *     tags: [Scores]
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: List of user scores
+ */
+router.get('/scores/user/:userId', getScoresByUser);
+
 export default router;
+
+/**
+ * @swagger
+ * /api/scores/competition/{id}/finalize:
+ *   post:
+ *     summary: Finalize scoring for a competition
+ *     tags: [Scores]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Scoring finalized
+ */
+router.post('/scores/competition/:id/finalize', authMiddleware, finalizeCompetitionScoring);

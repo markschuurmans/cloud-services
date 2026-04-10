@@ -3,7 +3,8 @@ import {
   createCompetition, 
   getCompetitions, 
   getCompetitionById, 
-  updateCompetitionStatus 
+  updateCompetitionStatus,
+  getActiveCompetitions
 } from '../controllers/competitionController.js';
 import { 
   registerForCompetition, 
@@ -75,6 +76,24 @@ router.post('/', authMiddleware, createCompetition);
  *                 $ref: '#/components/schemas/Competition'
  */
 router.get('/', getCompetitions);
+
+/**
+ * @swagger
+ * /api/competitions/active:
+ *   get:
+ *     summary: Get all active competitions with participant counts
+ *     tags: [Competitions]
+ *     responses:
+ *       200:
+ *         description: List of active competitions
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Competition'
+ */
+router.get('/active', getActiveCompetitions);
 
 /**
  * @swagger

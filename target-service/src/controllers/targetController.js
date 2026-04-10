@@ -14,7 +14,7 @@ export const createTarget = async (req, res, next) => {
       return res.status(400).json({ error: 'Image file is required.' });
     }
 
-    const baseUrl = process.env.BASE_URL || `http://localhost:${process.env.PORT || 3003}`;
+    const baseUrl = process.env.BASE_URL || '';
     const imageUrl = `${baseUrl}/uploads/${req.file.filename}`;
 
     const parsedTags = typeof tags === 'string' ? tags.split(',').map(tag => tag.trim()) : tags;

@@ -97,3 +97,16 @@ export const profile = async (req, res) => {
     res.status(500).json({ error: 'Internal server error in profile' });
   }
 };
+
+export const getUserById = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id).select('-passwordHash');
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    res.status(200).json(user);
+  } catch (error) {
+    console.error('GetUserById Error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};

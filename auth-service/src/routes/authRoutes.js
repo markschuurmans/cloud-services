@@ -1,5 +1,5 @@
 import express from 'express';
-import { register, login, profile } from '../controllers/authController.js';
+import { register, login, profile, getUserById } from '../controllers/authController.js';
 import authMiddleware from '../middleware/authMiddleware.js';
 
 const router = express.Router();
@@ -100,5 +100,25 @@ router.post('/login', login);
  *         description: Niet geautoriseerd
  */
 router.get('/profile', authMiddleware, profile);
+
+/**
+ * @swagger
+ * /auth/users/{id}:
+ *   get:
+ *     summary: Gebruiker ophalen bij ID (Interne service call)
+ *     tags: [Authentication]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Gebruikersinformatie
+ *       404:
+ *         description: Gebruiker niet gevonden
+ */
+router.get('/users/:id', authMiddleware, getUserById);
 
 export default router;

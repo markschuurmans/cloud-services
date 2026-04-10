@@ -18,7 +18,7 @@ export const analyzeScore = async (req, res, next) => {
     const authHeaders = req.headers.authorization ? { 'Authorization': req.headers.authorization } : {};
 
     // Fetch submission data
-    const targetServiceUrl = process.env.TARGET_SERVICE_URL || 'http://localhost:3003';
+    const targetServiceUrl = process.env.TARGET_SERVICE_URL || '';
     const submissionRes = await axios.get(`${targetServiceUrl}/api/submissions/${submissionId}`, { headers: authHeaders });
     const submission = submissionRes.data;
 
@@ -27,7 +27,7 @@ export const analyzeScore = async (req, res, next) => {
     const target = targetRes.data;
 
     // Fetch competition data
-    const registerServiceUrl = process.env.REGISTER_SERVICE_URL || 'http://localhost:3002';
+    const registerServiceUrl = process.env.REGISTER_SERVICE_URL || '';
     const compRes = await axios.get(`${registerServiceUrl}/api/competitions/${target.competitionId}`, { headers: authHeaders });
     const competition = compRes.data;
 
@@ -94,6 +94,27 @@ export const getRanking = async (req, res, next) => {
       });
 
     return res.status(200).json(ranking);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getScoresByUser = async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+    const scores = await Score.find({ participantId: userId });
+    res.status(200).json(scores);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const finalizeCompetitionScoring = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    console.log(`[Score Service] Finalizing scoring for competition ${id}`);
+    // Future logic: lock scores, generate certificates, etc.
+    res.status(200).json({ message: `Scoring for competition ${id} finalized.` });
   } catch (error) {
     next(error);
   }

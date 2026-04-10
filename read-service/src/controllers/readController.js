@@ -11,16 +11,11 @@ const getHeaders = (req) => {
 
 export const getActiveCompetitions = async (req, res, next) => {
     try {
-        const registerUrl = process.env.REGISTER_SERVICE_URL || "http://register-service:3002";
+        const registerUrl = process.env.REGISTER_SERVICE_URL || "";
+        const scoreUrl = process.env.SCORE_SERVICE_URL || "";
         
-        const compsRes = await axios.get(`${registerUrl}/competitions/active`, getHeaders(req));
+        const compsRes = await axios.get(`${registerUrl}/api/competitions/active`, getHeaders(req));
         const competitions = compsRes.data;
-
-        // TODO: For each competition, we could fetch registrations count
-        // Assuming register-service handles this or we fetch it here
-        // If register-service already returns participantCount, we're done.
-        // Otherwise we aggregate. Let's assume register-service endpoint /competitions/active
-        // already includes the count per competition for performance.
         
         res.json(competitions);
     } catch (error) {
@@ -31,14 +26,14 @@ export const getActiveCompetitions = async (req, res, next) => {
 export const getCompetitionSummary = async (req, res, next) => {
     try {
         const { id } = req.params;
-        const registerUrl = process.env.REGISTER_SERVICE_URL || "http://register-service:3002";
-        const targetUrl = process.env.TARGET_SERVICE_URL || "http://target-service:3003";
-        const scoreUrl = process.env.SCORE_SERVICE_URL || "http://score-service:3004";
+        const registerUrl = process.env.REGISTER_SERVICE_URL || "";
+        const targetUrl = process.env.TARGET_SERVICE_URL || "";
+        const scoreUrl = process.env.SCORE_SERVICE_URL || "";
 
         const [compRes, targetsRes, scoresRes] = await Promise.all([
-            axios.get(`${registerUrl}/competitions/${id}`, getHeaders(req)).catch(() => ({ data: null })),
-            axios.get(`${targetUrl}/targets?competitionId=${id}`, getHeaders(req)).catch(() => ({ data: [] })),
-            axios.get(`${scoreUrl}/scores/competition/${id}`, getHeaders(req)).catch(() => ({ data: [] }))
+            axios.get(`${registerUrl}/api/competitions/${id}`, getHeaders(req)).catch(() => ({ data: null })),
+            axios.get(`${targetUrl}/api/targets?competitionId=${id}`, getHeaders(req)).catch(() => ({ data: [] })),
+            axios.get(`${scoreUrl}/api/scores/ranking/${id}`, getHeaders(req)).catch(() => ({ data: [] }))
         ]);
 
         if (!compRes.data) {
@@ -58,9 +53,9 @@ export const getCompetitionSummary = async (req, res, next) => {
 export const getLeaderboard = async (req, res, next) => {
     try {
         const { compId } = req.params;
-        const scoreUrl = process.env.SCORE_SERVICE_URL || "http://score-service:3004";
+        const scoreUrl = process.env.SCORE_SERVICE_URL || "";
 
-        const scoresRes = await axios.get(`${scoreUrl}/scores/competition/${compId}`, getHeaders(req));
+        const scoresRes = await axios.get(`${scoreUrl}/api/scores/ranking/${compId}`, getHeaders(req));
         
         const leaderboard = scoresRes.data
             .sort((a, b) => b.finalScore - a.finalScore)
@@ -75,12 +70,12 @@ export const getLeaderboard = async (req, res, next) => {
 export const getParticipantStats = async (req, res, next) => {
     try {
         const { userId } = req.params;
-        const registerUrl = process.env.REGISTER_SERVICE_URL || "http://register-service:3002";
-        const scoreUrl = process.env.SCORE_SERVICE_URL || "http://score-service:3004";
+        const registerUrl = process.env.REGISTER_SERVICE_URL || "";
+        const scoreUrl = process.env.SCORE_SERVICE_URL || "";
 
         const [regsRes, scoresRes] = await Promise.all([
-            axios.get(`${registerUrl}/registrations/user/${userId}`, getHeaders(req)).catch(() => ({ data: [] })),
-            axios.get(`${scoreUrl}/scores/user/${userId}`, getHeaders(req)).catch(() => ({ data: [] }))
+            axios.get(`${registerUrl}/api/registrations/user/${userId}`, getHeaders(req)).catch(() => ({ data: [] })),
+            axios.get(`${scoreUrl}/api/scores/user/${userId}`, getHeaders(req)).catch(() => ({ data: [] }))
         ]);
 
         const registrations = regsRes.data;

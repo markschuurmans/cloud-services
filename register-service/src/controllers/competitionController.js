@@ -1,4 +1,5 @@
 import Competition from '../models/Competition.js';
+import Registration from '../models/Registration.js';
 
 export const createCompetition = async (req, res, next) => {
   try {
@@ -64,6 +65,38 @@ export const updateCompetitionStatus = async (req, res, next) => {
     }
 
     res.status(200).json(competition);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getActiveCompetitions = async (req, res, next) => {
+  try {
+    const competitions = await Competition.aggregate([
+      { $match: { status: 'active' } },
+      {
+        $lookup: {
+          from: 'registrations',
+          localField: '_id',
+          foreignField: 'competitionId',
+          as: 'registrations'
+        }
+      },
+      {
+        $addFields: {
+          id: '$_id',
+          participantCount: { $size: '$registrations' }
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          __v: 0,
+          registrations: 0
+        }
+      }
+    ]);
+    res.status(200).json(competitions);
   } catch (error) {
     next(error);
   }

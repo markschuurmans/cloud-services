@@ -16,9 +16,9 @@ export const finalizeCompetition = async (competitionId) => {
   const token = generateSystemToken();
   const headers = { Authorization: `Bearer ${token}` };
 
-  const REGISTER_SERVICE = process.env.REGISTER_SERVICE_URL || 'http://localhost:3002';
-  const SCORE_SERVICE = process.env.SCORE_SERVICE_URL || 'http://localhost:3004';
-  const MAIL_SERVICE = process.env.MAIL_SERVICE_URL || 'http://localhost:3006';
+  const REGISTER_SERVICE = process.env.REGISTER_SERVICE_URL || '';
+  const SCORE_SERVICE = process.env.SCORE_SERVICE_URL || '';
+  const MAIL_SERVICE = process.env.MAIL_SERVICE_URL || '';
 
   try {
     console.log(`[Clock] Starting finalization for competition: ${competitionId}`);
@@ -75,7 +75,7 @@ const startCronJob = () => {
     console.log(`[Clock] Running deadline check at ${new Date().toISOString()}`);
 
     try {
-      const REGISTER_SERVICE = process.env.REGISTER_SERVICE_URL || 'http://localhost:3002';
+      const REGISTER_SERVICE = process.env.REGISTER_SERVICE_URL || '';
       
       const response = await axios.get(`${REGISTER_SERVICE}/api/competitions`);
       const competitions = response.data;

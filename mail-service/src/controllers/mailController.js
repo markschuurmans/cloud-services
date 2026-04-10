@@ -1,4 +1,5 @@
 import MailLog from "../models/MailLog.js";
+import axios from "axios";
 import transporter, {
     MAIL_FROM,
     SMTP_TIMEOUT_MS,
@@ -236,6 +237,61 @@ export const sendWinnerMail = async (req, res, next) => {
             status: "accepted",
         });
     } catch (error) {
+        return next(error);
+    }
+};
+
+export const notifyCompetitionEnd = async (req, res, next) => {
+    try {
+        const { competitionId } = req.params;
+        const registerUrl = process.env.REGISTER_SERVICE_URL || "";
+        const authUrl = process.env.AUTH_SERVICE_URL || "";
+        const headers = { Authorization: req.headers.authorization };
+
+        const compRes = await axios.get(`${registerUrl}/api/competitions/${competitionId}`, { headers });
+        const competition = compRes.data;
+
+        const regsRes = await axios.get(`${registerUrl}/api/competitions/${competitionId}/registrations`, { headers });
+        const registrations = regsRes.data;
+
+        if (!registrations || registrations.length === 0) {
+            return res.status(200).json({ message: "No participants to notify." });
+        }
+
+        const participantIds = [...new Set(registrations.map(r => r.participantId))];
+        console.log(`[Mail Service] Notifying ${participantIds.length} unique participants for competition ${competition.title}`);
+
+        for (const userId of participantIds) {
+            try {
+                const userRes = await axios.get(`${authUrl}/api/auth/users/${userId}`, { headers });
+                const user = userRes.data;
+
+                const subject = `Wedstrijd gesloten: ${competition.title}`;
+                const html = deadlineTemplate({
+                    displayName: user.displayName,
+                    competitionTitle: competition.title,
+                    deadline: competition.deadline,
+                });
+
+                queueMailDelivery({
+                    recipientEmail: user.email,
+                    subject,
+                    html,
+                    mailType: "competition-end",
+                    payload: { competitionId, userId },
+                });
+            } catch (err) {
+                console.error(`[Mail Service] Failed to notify user ${userId}:`, err.message);
+            }
+        }
+
+        return res.status(202).json({
+            message: `Notification process for competition ${competitionId} initiated.`,
+            status: "accepted",
+            participantCount: participantIds.length
+        });
+    } catch (error) {
+        console.error(`[Mail Service] notifyCompetitionEnd error:`, error.message);
         return next(error);
     }
 };

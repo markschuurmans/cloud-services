@@ -20,7 +20,7 @@ app.get("/health", (req, res) => {
 });
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-app.use("/", mailRoutes);
+app.use("/api", mailRoutes);
 
 app.use(errorHandler);
 

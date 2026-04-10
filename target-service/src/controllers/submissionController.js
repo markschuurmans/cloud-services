@@ -28,7 +28,7 @@ export const createSubmission = async (req, res, next) => {
     }
 
     // Check if submission is still within deadline
-    const registerServiceUrl = process.env.REGISTER_SERVICE_URL || 'http://localhost:3002';
+    const registerServiceUrl = process.env.REGISTER_SERVICE_URL || '';
     try {
       const response = await fetch(`${registerServiceUrl}/api/competitions/${target.competitionId}`, {
         headers: { 'Authorization': req.headers.authorization }
@@ -49,7 +49,7 @@ export const createSubmission = async (req, res, next) => {
     }
 
     // Generate file URL
-    const baseUrl = process.env.BASE_URL || `http://localhost:${process.env.PORT || 3003}`;
+    const baseUrl = process.env.BASE_URL || '';
     const imageUrl = `${baseUrl}/uploads/${req.file.filename}`;
 
     const newSubmission = new Submission({
@@ -62,7 +62,7 @@ export const createSubmission = async (req, res, next) => {
     const savedSubmission = await newSubmission.save();
 
     // Notify Score Service
-    const scoreServiceUrl = process.env.SCORE_SERVICE_URL || 'http://localhost:3004';
+    const scoreServiceUrl = process.env.SCORE_SERVICE_URL || '';
     try {
       fetch(`${scoreServiceUrl}/api/scores/analyze`, {
         method: 'POST',

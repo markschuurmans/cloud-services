@@ -5,6 +5,7 @@ import {
     sendRegistrationMail,
     sendScoreResultMail,
     sendWinnerMail,
+    notifyCompetitionEnd,
 } from "../controllers/mailController.js";
 
 const router = express.Router();
@@ -156,3 +157,21 @@ router.post("/mail/score-result", authMiddleware, sendScoreResultMail);
 router.post("/mail/winner", authMiddleware, sendWinnerMail);
 
 export default router;
+
+/**
+ * @swagger
+ * /api/mail/competition/{competitionId}/notify:
+ *   post:
+ *     summary: Trigger mass notifications for a competition end
+ *     tags: [Mail]
+ *     parameters:
+ *       - in: path
+ *         name: competitionId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       202:
+ *         description: Notification process initiated
+ */
+router.post("/mail/competition/:competitionId/notify", authMiddleware, notifyCompetitionEnd);
