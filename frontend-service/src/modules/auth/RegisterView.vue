@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import {HTMLAttributes, reactive, ref} from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
 import { apiRequest } from '@/services/api.ts'
-import { setToken } from '@/services/auth.ts'
 import {
   Field,
   FieldDescription,
@@ -17,44 +16,49 @@ const props = defineProps<{
   class?: HTMLAttributes["class"]
 }>()
 
-type LoginResponse = {
+type RegisterResponse = {
   message: string
-  token: string
+  user: {
+    id: string
+    email: string
+    displayName: string
+    role: string
+  }
 }
 
 const router = useRouter()
-const route = useRoute()
 
 const form = reactive({
+  displayName: '',
   email: '',
   password: '',
 })
 
 const error = ref('')
+const success = ref('')
 const loading = ref(false)
 const authServiceBaseUrl = import.meta.env.VITE_AUTH_SERVICE_URL || 'http://localhost:3001'
 
-async function submitLogin() {
+async function submitRegister() {
   loading.value = true
   error.value = ''
+  success.value = ''
 
   try {
-    console.log(authServiceBaseUrl)
-    const data = await apiRequest<LoginResponse>('/api/auth/login', {
+    const data = await apiRequest<RegisterResponse>('/api/auth/register', {
       method: 'POST',
       baseUrl: authServiceBaseUrl,
       body: JSON.stringify({
+        displayName: form.displayName,
         email: form.email,
         password: form.password,
       }),
     })
 
-    setToken(data.token || '')
-
-    const redirectTarget = typeof route.query.redirect === 'string' ? route.query.redirect : '/targets'
-    await router.push(redirectTarget)
+    success.value = data.message || 'Registratie gelukt. Je kunt nu inloggen.'
+    await router.push({ name: 'login', query: { registered: '1' } })
   } catch (err) {
-    error.value = err instanceof Error ? err.message : 'Login mislukt'
+    error.value = err instanceof Error ? err.message : 'Registratie mislukt'
   } finally {
     loading.value = false
   }
@@ -62,16 +66,22 @@ async function submitLogin() {
 </script>
 
 <template>
-  <form :class="cn('flex flex-col gap-6', props.class)" @submit.prevent="submitLogin">
+  <form :class="cn('flex flex-col gap-6', props.class)" @submit.prevent="submitRegister">
     <FieldGroup>
       <div class="flex flex-col items-start gap-1">
         <h1 class="text-2xl font-bold">
-          Welkom terug
+          Registeren
         </h1>
         <p class="text-muted-foreground text-sm text-balance">
-          Log in met uw account om verder te gaan
+          Maak een nieuw account aan om verder te gaan
         </p>
       </div>
+      <Field>
+        <FieldLabel for="displayName">
+          Gebruikersnaam
+        </FieldLabel>
+        <Input id="displayName" v-model="form.displayName" type="text" required />
+      </Field>
       <Field>
         <FieldLabel for="email">
           E-mail
@@ -87,13 +97,16 @@ async function submitLogin() {
       <p v-if="error" class="rounded-md border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
         {{ error }}
       </p>
+      <p v-if="success" class="rounded-md border border-emerald-300 bg-emerald-50 p-3 text-sm text-emerald-700">
+        {{ success }}
+      </p>
       <Field>
         <Button type="submit" :disabled="loading">
-          {{ loading ? 'Bezig met inloggen...' : 'Login' }}
+          {{ loading ? 'Bezig met registreren...' : 'Account aanmaken' }}
         </Button>
         <FieldDescription class="text-center">
-          Neg geen account?
-          <router-link :to="{ name: 'register' }" class="underline underline-offset-2">Aanmelden</router-link>
+          Heb je al een account?
+          <router-link :to="{ name: 'login' }" class="underline underline-offset-2">Inloggen</router-link>
         </FieldDescription>
       </Field>
     </FieldGroup>

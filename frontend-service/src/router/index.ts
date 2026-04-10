@@ -10,13 +10,28 @@ const router = createRouter({
       redirect: '/targets',
     },
     {
-      path: '/login',
-      name: 'login',
-      component: () => import("@/modules/auth/LoginView.vue"),
-      meta: {
-        guestOnly: true,
-      },
+      path: '',
+      component: () => import('@/modules/auth/AuthLayout.vue'),
+      children: [
+        {
+          path: '/login',
+          name: 'login',
+          component: () => import("@/modules/auth/LoginView.vue"),
+          meta: {
+            guestOnly: true,
+          },
+        },
+        {
+          path: '/register',
+          name: 'register',
+          component: () => import("@/modules/auth/RegisterView.vue"),
+          meta: {
+            guestOnly: true,
+          },
+        },
+      ]
     },
+
     {
       path: '',
       component: () => import('@/layouts/Layout.vue'),

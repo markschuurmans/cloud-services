@@ -2,12 +2,14 @@ import { getToken } from '@/services/auth'
 
 type ApiRequestOptions = RequestInit & {
   headers?: Record<string, string>
+  baseUrl?: string
 }
 
 export async function apiRequest<T>(path: string, options: ApiRequestOptions = {}): Promise<T> {
-  const headers = new Headers(options.headers || {})
+  const { baseUrl, ...fetchOptions } = options
+  const headers = new Headers(fetchOptions.headers || {})
 
-  if (options.body && !headers.has('Content-Type')) {
+  if (fetchOptions.body && !headers.has('Content-Type')) {
     headers.set('Content-Type', 'application/json')
   }
 
@@ -16,8 +18,10 @@ export async function apiRequest<T>(path: string, options: ApiRequestOptions = {
     headers.set('Authorization', `Bearer ${token}`)
   }
 
-  const response = await fetch(path, {
-    ...options,
+  const requestUrl = baseUrl ? `${baseUrl.replace(/\/$/, '')}${path}` : path
+
+  const response = await fetch(requestUrl, {
+    ...fetchOptions,
     headers: Object.fromEntries(headers.entries()),
   })
 
