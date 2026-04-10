@@ -8,6 +8,7 @@ dotenv.config();
 import authRoutes from './routes/authRoutes.js';
 import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from './config/swagger.js';
+import errorHandler from './middleware/errorHandler.js';
 
 const app = express();
 
@@ -20,28 +21,27 @@ app.get('/health', (req, res) => {
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-app.use('/auth', authRoutes);
+app.use('/api/auth', authRoutes);
 
-app.use((err, req, res, next) => {
-    res.status(500).json({ error: 'Something went wrong', message: err.message });
-});
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 3001;
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/photo_prestiges_auth';
 
 if (!process.env.JWT_SECRET) {
-    console.error('JWT_SECRET is not defined.');
+    console.error('[Auth-Service] JWT_SECRET is not defined.');
     process.exit(1);
 }
 
 mongoose.connect(MONGO_URI)
     .then(() => {
-        console.log('Connected to MongoDB for Auth-Service');
+        console.log('[Auth-Service] Connected to MongoDB');
         app.listen(PORT, () => {
-            console.log(`Auth service is running on port ${PORT}`);
+            console.log(`[Auth-Service] Running on port ${PORT}`);
         });
     })
     .catch(err => {
-        console.error('Database connection failed:', err.message);
+        console.error('[Auth-Service] Database connection failed:', err.message);
         process.exit(1);
     });
+

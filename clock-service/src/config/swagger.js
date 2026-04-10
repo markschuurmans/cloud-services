@@ -4,12 +4,12 @@ const options = {
   definition: {
     openapi: '3.0.0',
     info: {
-      title: 'Clock Service API',
+      title: 'Clock service API',
       version: '1.0.0',
     },
     components: {
       securitySchemes: {
-        bearerAuth: {
+        BearerAuth: {
           type: 'http',
           scheme: 'bearer',
           bearerFormat: 'JWT',
@@ -20,4 +20,7 @@ const options = {
   apis: ['./src/routes/*.js', './src/models/*.js'],
 };
 
-export const swaggerSpec = swaggerJsdoc(options);
+const swaggerSpec = swaggerJsdoc(options);
+
+export default swaggerSpec;
+

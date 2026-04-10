@@ -31,18 +31,19 @@ const PORT = process.env.PORT || 3002;
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/photo_prestiges_register';
 
 if (!process.env.JWT_SECRET) {
-    console.error('JWT_SECRET is not defined.');
+    console.error('[Register-Service] JWT_SECRET is not defined.');
     process.exit(1);
 }
 
 mongoose.connect(MONGO_URI)
     .then(() => {
-        console.log('Connected to MongoDB for Register-Service');
+        console.log('[Register-Service] Connected to MongoDB');
         app.listen(PORT, () => {
-            console.log(`Register service is running on port ${PORT}`);
+            console.log(`[Register-Service] Running on port ${PORT}`);
         });
     })
     .catch(err => {
-        console.error('Database connection failed:', err.message);
+        console.error('[Register-Service] Database connection failed:', err.message);
         process.exit(1);
     });
+

@@ -1,38 +1,47 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import cors from 'cors';
 import swaggerUi from 'swagger-ui-express';
-import { swaggerSpec } from './config/swagger.js';
+import swaggerSpec from './config/swagger.js';
 import clockRoutes from './routes/clockRoutes.js';
 import startCronJob from './jobs/deadlineJob.js';
+import errorHandler from './middleware/errorHandler.js';
 
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3005;
 
+app.use(cors());
 app.use(express.json());
+
+app.get('/health', (req, res) => {
+    res.json({ status: 'Clock service is running', timestamp: new Date() });
+});
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use('/api/clock', clockRoutes);
 
-app.use((err, req, res, next) => {
-  console.error('[App] Error:', err);
-  res.status(err.status || 500).json({
-    error: err.message || 'Internal Server Error'
-  });
-});
+app.use(errorHandler);
 
-mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/photo_prestiges_clock')
+const PORT = process.env.PORT || 3005;
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/photo_prestiges_clock';
+
+if (!process.env.JWT_SECRET) {
+    console.error('[Clock-Service] JWT_SECRET is not defined.');
+    process.exit(1);
+}
+
+mongoose.connect(MONGO_URI)
   .then(() => {
-    console.log('[App] Connected to MongoDB.');
+    console.log('[Clock-Service] Connected to MongoDB');
     app.listen(PORT, () => {
-      console.log(`[App] Clock Service running on port ${PORT}`);
-      console.log(`[App] Swagger docs available at http://localhost:${PORT}/api-docs`);
-      
+      console.log(`[Clock-Service] Running on port ${PORT}`);
       startCronJob();
     });
   })
   .catch((err) => {
-    console.error('[App] Failed to connect to MongoDB:', err);
+    console.error('[Clock-Service] Failed to connect to MongoDB:', err.message);
+    process.exit(1);
   });
+

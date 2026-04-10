@@ -29,18 +29,19 @@ const PORT = process.env.PORT || 3004;
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/photo_prestiges_score';
 
 if (!process.env.JWT_SECRET) {
-    console.error('JWT_SECRET is not defined!');
+    console.error('[Score-Service] JWT_SECRET is not defined!');
     process.exit(1);
 }
 
 mongoose.connect(MONGO_URI)
     .then(() => {
-        console.log('Connected to MongoDB for Score-Service');
+        console.log('[Score-Service] Connected to MongoDB');
         app.listen(PORT, () => {
-            console.log(`Score service is running on port ${PORT}`);
+            console.log(`[Score-Service] Running on port ${PORT}`);
         });
     })
     .catch(err => {
-        console.error('Database connection failed:', err.message);
+        console.error('[Score-Service] Database connection failed:', err.message);
         process.exit(1);
     });
+
