@@ -26,14 +26,9 @@ export const analyzeScore = async (req, res, next) => {
     const targetRes = await axios.get(`${targetServiceUrl}/api/targets/${submission.targetId}`, { headers: authHeaders });
     const target = targetRes.data;
 
-    // Fetch competition data
-    const registerServiceUrl = process.env.REGISTER_SERVICE_URL || '';
-    const compRes = await axios.get(`${registerServiceUrl}/api/competitions/${target.competitionId}`, { headers: authHeaders });
-    const competition = compRes.data;
-
-    // Time factor calculation
-    const startTime = new Date(competition.createdAt).getTime();
-    const endTime = new Date(competition.deadline).getTime();
+    // Time factor calculation based on target lifecycle.
+    const startTime = new Date(target.createdAt).getTime();
+    const endTime = target.deadline ? new Date(target.deadline).getTime() : startTime;
     const submissionTime = new Date(submission.submittedAt).getTime();
     
     let timeFactor = 1;
@@ -60,9 +55,8 @@ export const analyzeScore = async (req, res, next) => {
     // Save new score
     const newScore = new Score({
       submissionId,
-      targetId: target.id,
+      targetId: target.id || target._id,
       participantId: submission.participantId,
-      competitionId: target.competitionId,
       imaggaMatchPercent: Number(imaggaMatchPercent.toFixed(2)),
       timePenaltyFactor: Number(timeFactor.toFixed(4)),
       finalScore: Number(finalScore.toFixed(2)),
@@ -84,10 +78,10 @@ export const analyzeScore = async (req, res, next) => {
 
 export const getRanking = async (req, res, next) => {
   try {
-    const { compId } = req.params;
-    
-    const ranking = await Score.find({ competitionId: compId })
-      .sort({ 
+    const { targetId } = req.params;
+
+    const ranking = await Score.find({ targetId })
+      .sort({
         finalScore: -1, 
         imaggaMatchPercent: -1,
         timePenaltyFactor: -1
@@ -109,12 +103,12 @@ export const getScoresByUser = async (req, res, next) => {
   }
 };
 
-export const finalizeCompetitionScoring = async (req, res, next) => {
+export const finalizeTargetScoring = async (req, res, next) => {
   try {
     const { id } = req.params;
-    console.log(`[Score Service] Finalizing scoring for competition ${id}`);
+    console.log(`[Score Service] Finalizing scoring for target ${id}`);
     // Future logic: lock scores, generate certificates, etc.
-    res.status(200).json({ message: `Scoring for competition ${id} finalized.` });
+    res.status(200).json({ message: `Scoring for target ${id} finalized.` });
   } catch (error) {
     next(error);
   }

@@ -12,7 +12,7 @@ const generateSystemToken = () => {
   );
 };
 
-export const finalizeCompetition = async (competitionId) => {
+export const finalizeTarget = async (targetId) => {
   const token = generateSystemToken();
   const headers = { Authorization: `Bearer ${token}` };
 
@@ -21,49 +21,49 @@ export const finalizeCompetition = async (competitionId) => {
   const MAIL_SERVICE = process.env.MAIL_SERVICE_URL || '';
 
   try {
-    console.log(`[Clock] Starting finalization for competition: ${competitionId}`);
+    console.log(`[Clock] Starting finalization for target: ${targetId}`);
 
-    // Set competition status to finished
-    await axios.patch(`${REGISTER_SERVICE}/api/competitions/${competitionId}/status`, 
+    // Set target status to finished.
+    await axios.patch(`${REGISTER_SERVICE}/api/targets/${targetId}/status`,
       { status: 'finished' },
       { headers }
     );
-    console.log(`[Clock] Competition ${competitionId} marked as finished.`);
+    console.log(`[Clock] Target ${targetId} marked as finished.`);
 
     // Trigger final scoring
-    await axios.post(`${SCORE_SERVICE}/api/scores/competition/${competitionId}/finalize`, {}, { headers });
-    console.log(`[Clock] Final scoring triggered for ${competitionId}.`);
+    await axios.post(`${SCORE_SERVICE}/api/scores/target/${targetId}/finalize`, {}, { headers });
+    console.log(`[Clock] Final scoring triggered for ${targetId}.`);
 
     // Trigger notifications
-    await axios.post(`${MAIL_SERVICE}/api/mail/competition/${competitionId}/notify`, {}, { headers });
-    console.log(`[Clock] Mail notifications triggered for ${competitionId}.`);
+    await axios.post(`${MAIL_SERVICE}/api/mail/target/${targetId}/notify`, {}, { headers });
+    console.log(`[Clock] Mail notifications triggered for ${targetId}.`);
 
     // Log success
     await JobLog.create({
-      competitionId,
+      targetId,
       action: 'deadline_triggered',
       status: 'success',
-      details: 'Competition successfully evaluated and finalized.'
+      details: 'Target successfully evaluated and finalized.'
     });
 
-    return { status: 'success', competitionId };
+    return { status: 'success', targetId };
   } catch (error) {
     const errorMsg = error.response ? JSON.stringify(error.response.data) : error.message;
-    console.error(`[Clock] Error finalizing competition ${competitionId}:`, errorMsg);
-    
+    console.error(`[Clock] Error finalizing target ${targetId}:`, errorMsg);
+
     // Log failure
     try {
       await JobLog.create({
-        competitionId,
+        targetId,
         action: 'deadline_triggered',
         status: 'failed',
         details: errorMsg
       });
     } catch (dbError) {
-      console.error(`[Clock] Failed to write JobLog for ${competitionId}:`, dbError.message);
+      console.error(`[Clock] Failed to write JobLog for ${targetId}:`, dbError.message);
     }
 
-    throw new Error(`Finalization failed for ${competitionId}`);
+    throw new Error(`Finalization failed for ${targetId}`);
   }
 };
 
@@ -77,35 +77,36 @@ const startCronJob = () => {
     try {
       const REGISTER_SERVICE = process.env.REGISTER_SERVICE_URL || '';
       
-      const response = await axios.get(`${REGISTER_SERVICE}/api/competitions`);
-      const competitions = response.data;
+      const response = await axios.get(`${REGISTER_SERVICE}/api/targets`);
+      const targets = response.data;
 
       const now = new Date();
 
-      const expiredCompetitions = competitions.filter(c => {
-        if (c.status === 'finished') return false;
-        
-        const deadlineDate = new Date(c.deadline);
+      const expiredTargets = targets.filter((target) => {
+        if (target.status === 'finished') return false;
+        if (!target.deadline) return false;
+
+        const deadlineDate = new Date(target.deadline);
         return deadlineDate <= now;
       });
 
-      if (expiredCompetitions.length === 0) {
-        console.log('[Clock] No expired competitions found.');
+      if (expiredTargets.length === 0) {
+        console.log('[Clock] No expired targets found.');
         return;
       }
 
-      console.log(`[Clock] Found ${expiredCompetitions.length} expired competitions. Processing...`);
+      console.log(`[Clock] Found ${expiredTargets.length} expired targets. Processing...`);
 
-      for (const comp of expiredCompetitions) {
+      for (const target of expiredTargets) {
         try {
-          await finalizeCompetition(comp.id);
+          await finalizeTarget(target.id || target._id);
         } catch (e) {
-          console.error(`[Clock] Error finalizing competition ${comp.id}:`, e.message);
+          console.error(`[Clock] Error finalizing target ${target.id || target._id}:`, e.message);
         }
       }
 
     } catch (error) {
-      console.error('[Clock] Error checking for expired competitions:', error.message);
+      console.error('[Clock] Error checking for expired targets:', error.message);
     }
   });
 };

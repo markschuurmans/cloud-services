@@ -22,7 +22,7 @@ app.get('/health', (req, res) => {
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-app.use('/api/competitions', competitionRoutes);
+app.use('/api/targets', competitionRoutes);
 app.use('/api/registrations', registrationRoutes);
 
 app.use(errorHandler);

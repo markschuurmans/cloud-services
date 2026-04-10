@@ -4,11 +4,11 @@ import path from 'path';
 
 export const createTarget = async (req, res, next) => {
   try {
-    if (req.user.role !== 'owner' && req.user.role !== 'admin') {
-      return res.status(403).json({ error: 'Only owners or admins can create targets.' });
-    }
+    // if (req.user.role !== 'owner' && req.user.role !== 'admin') {
+    //   return res.status(403).json({ error: 'Only owners or admins can create targets.' });
+    // }
 
-    const { competitionId, title, locationName, tags } = req.body;
+    const { title, description, locationName, tags, deadline, registrationOpen, status } = req.body;
 
     if (!req.file) {
       return res.status(400).json({ error: 'Image file is required.' });
@@ -19,11 +19,16 @@ export const createTarget = async (req, res, next) => {
 
     const parsedTags = typeof tags === 'string' ? tags.split(',').map(tag => tag.trim()) : tags;
 
+    console.log(req.user)
+
     const newTarget = new Target({
-      competitionId,
-      ownerId: req.user.id,
+      ownerId: req.user.sub,
       title,
+      description: description || '',
       imageUrl,
+      deadline: deadline ? new Date(deadline) : null,
+      registrationOpen: registrationOpen === undefined ? true : registrationOpen !== 'false',
+      status: status || 'active',
       locationName,
       tags: parsedTags || []
     });
@@ -72,9 +77,7 @@ export const deleteTarget = async (req, res, next) => {
 
 export const getTargets = async (req, res, next) => {
   try {
-    const { competitionId } = req.query;
-    const filter = competitionId ? { competitionId } : {};
-    const targets = await Target.find(filter);
+    const targets = await Target.find();
     return res.status(200).json(targets);
   } catch (error) {
     next(error);
@@ -93,3 +96,31 @@ export const getTargetById = async (req, res, next) => {
       next(error);
     }
   };
+
+export const updateTargetStatus = async (req, res, next) => {
+  try {
+    const { status } = req.body;
+    if (!status || !['pending', 'active', 'finished'].includes(status)) {
+      return res.status(400).json({ error: 'Invalid or missing status.' });
+    }
+
+    const updates = {
+      status,
+      registrationOpen: status !== 'finished',
+    };
+
+    const target = await Target.findByIdAndUpdate(req.params.id, updates, {
+      new: true,
+      runValidators: true,
+    });
+
+    if (!target) {
+      return res.status(404).json({ error: 'Target not found.' });
+    }
+
+    return res.status(200).json(target);
+  } catch (error) {
+    next(error);
+  }
+};
+

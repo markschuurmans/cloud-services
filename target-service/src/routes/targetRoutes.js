@@ -1,5 +1,5 @@
 import express from 'express';
-import { createTarget, deleteTarget, getTargets, getTargetById } from '../controllers/targetController.js';
+import { createTarget, deleteTarget, getTargets, getTargetById, updateTargetStatus } from '../controllers/targetController.js';
 import { createSubmission, deleteSubmission, getSubmissions, getSubmissionById } from '../controllers/submissionController.js';
 import authMiddleware from '../middleware/authMiddleware.js';
 import { upload } from '../config/multer.js';
@@ -28,12 +28,20 @@ const router = express.Router();
  *           schema:
  *             type: object
  *             properties:
- *               competitionId:
- *                 type: string
  *               title:
+ *                 type: string
+ *               description:
  *                 type: string
  *               locationName:
  *                 type: string
+ *               deadline:
+ *                 type: string
+ *                 format: date-time
+ *               registrationOpen:
+ *                 type: boolean
+ *               status:
+ *                 type: string
+ *                 enum: [pending, active, finished]
  *               tags:
  *                 type: string
  *                 description: Comma-separated tags
@@ -54,14 +62,8 @@ router.post('/targets', authMiddleware, upload.single('image'), createTarget);
  * @swagger
  * /api/targets:
  *   get:
- *     summary: Get targets (optional filter by competitionId)
+ *     summary: Get all targets
  *     tags: [Targets]
- *     parameters:
- *       - in: query
- *         name: competitionId
- *         schema:
- *           type: string
- *         description: Filter targets by competitionId
  *     responses:
  *       200:
  *         description: A list of targets
@@ -111,6 +113,41 @@ router.get('/targets/:id', getTargetById);
  *         description: Target not found
  */
 router.delete('/targets/:id', authMiddleware, deleteTarget);
+
+/**
+ * @swagger
+ * /api/targets/{id}/status:
+ *   patch:
+ *     summary: Update a target status
+ *     tags: [Targets]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [status]
+ *             properties:
+ *               status:
+ *                 type: string
+ *                 enum: [pending, active, finished]
+ *     responses:
+ *       200:
+ *         description: Target status updated
+ *       400:
+ *         description: Invalid status
+ *       404:
+ *         description: Target not found
+ */
+router.patch('/targets/:id/status', authMiddleware, updateTargetStatus);
 
 /**
  * @swagger

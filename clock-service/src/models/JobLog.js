@@ -10,9 +10,9 @@ import mongoose from 'mongoose';
  *         id:
  *           type: string
  *           description: UUID of the JobLog document
- *         competitionId:
+ *         targetId:
  *           type: string
- *           description: ID of the competition this log is related to
+ *           description: ID of the target this log is related to
  *         action:
  *           type: string
  *           description: The finalization action executed (e.g. deadline_triggered)
@@ -31,7 +31,7 @@ import mongoose from 'mongoose';
  *           format: date-time
  */
 const jobLogSchema = new mongoose.Schema({
-  competitionId: {
+  targetId: {
     type: String,
     required: true
   },

@@ -9,7 +9,6 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 type Target = {
   id?: string
   _id?: string
-  competitionId: string
   title: string
   imageUrl: string
   locationName?: string
@@ -20,6 +19,7 @@ type Target = {
 const loading = ref(false)
 const error = ref('')
 const targets = ref<Target[]>([])
+const registeringTargetId = ref('')
 
 function normalizeImageUrl(url: string | undefined) {
   if (!url) {
@@ -29,7 +29,7 @@ function normalizeImageUrl(url: string | undefined) {
   const marker = '/uploads/'
   const markerIndex = url.indexOf(marker)
   if (markerIndex === -1) {
-	return url
+	  return url
   }
 
   const fileName = url.slice(markerIndex + marker.length)
@@ -71,6 +71,21 @@ async function fetchTargets() {
 	error.value = err instanceof Error ? err.message : 'Targets ophalen mislukt'
   } finally {
 	loading.value = false
+  }
+}
+
+async function registerForTarget(targetId: string) {
+  registeringTargetId.value = targetId
+  error.value = ''
+
+  try {
+	await apiRequest(`/api/register/targets/${targetId}/register`, {
+	  method: 'POST',
+	})
+  } catch (err) {
+	error.value = err instanceof Error ? err.message : 'Inschrijven voor target mislukt'
+  } finally {
+	registeringTargetId.value = ''
   }
 }
 
@@ -132,6 +147,7 @@ onMounted(fetchTargets)
 
 	  <ul v-else class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
 		<li v-for="target in sortedTargets" :key="target.id || target._id">
+      {{target}}
 		  <Card class="h-full overflow-hidden py-0">
 			<img
 			  v-if="normalizeImageUrl(target.imageUrl)"
@@ -147,10 +163,6 @@ onMounted(fetchTargets)
 			  </CardDescription>
 			</CardHeader>
 			<CardContent class="space-y-3">
-			  <p class="text-sm text-muted-foreground">
-				<span class="font-medium text-foreground">Competitie:</span>
-				{{ target.competitionId }}
-			  </p>
 			  <div class="flex flex-wrap gap-2">
 				<Badge v-for="tag in target.tags || []" :key="`${target.id || target._id}-${tag}`" variant="secondary">
 				  {{ tag }}
@@ -159,8 +171,15 @@ onMounted(fetchTargets)
 			  </div>
 			</CardContent>
 			<CardFooter class="justify-between text-xs text-muted-foreground">
-			  <span>Toegevoegd</span>
-			  <span>{{ formatDate(target.createdAt) }}</span>
+			  <span>Toegevoegd {{ formatDate(target.createdAt) }}</span>
+			  <Button
+				type="button"
+				size="sm"
+				:disabled="registeringTargetId === (target.id || target._id)"
+				@click="registerForTarget(String(target.id || target._id))"
+			  >
+				{{ registeringTargetId === (target.id || target._id) ? 'Inschrijven...' : 'Schrijf in' }}
+			  </Button>
 			</CardFooter>
 		  </Card>
 		</li>

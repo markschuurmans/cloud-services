@@ -10,9 +10,9 @@ import mongoose from 'mongoose';
  *         id:
  *           type: string
  *           description: UUID of ObjectId door MongoDB gegenereerd
- *         competitionId:
+ *         targetId:
  *           type: string
- *           description: ID van de competitie
+ *           description: ID van de target
  *         participantId:
  *           type: string
  *           description: ID van de deelnemer
@@ -28,10 +28,10 @@ import mongoose from 'mongoose';
  *           format: date-time
  */
 const registrationSchema = new mongoose.Schema({
-  competitionId: {
+  targetId: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
-    ref: 'Competition'
+    ref: 'Target'
   },
   participantId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -54,7 +54,7 @@ const registrationSchema = new mongoose.Schema({
   }
 });
 
-registrationSchema.index({ competitionId: 1, participantId: 1 }, { unique: true });
+registrationSchema.index({ targetId: 1, participantId: 1 }, { unique: true });
 
 const Registration = mongoose.model('Registration', registrationSchema);
 

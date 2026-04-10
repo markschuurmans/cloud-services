@@ -19,9 +19,6 @@ import mongoose from 'mongoose';
  *         participantId:
  *           type: string
  *           description: ObjectId van de participant
- *         competitionId:
- *           type: string
- *           description: ObjectId van de competitie
  *         imaggaMatchPercent:
  *           type: number
  *           description: De base match score uit Imagga API
@@ -59,10 +56,6 @@ const scoreSchema = new mongoose.Schema({
     required: true
   },
   participantId: {
-    type: mongoose.Schema.Types.ObjectId,
-    required: true
-  },
-  competitionId: {
     type: mongoose.Schema.Types.ObjectId,
     required: true
   },

@@ -1,14 +1,13 @@
 import express from 'express';
 import { 
-  createCompetition, 
-  getCompetitions, 
-  getCompetitionById, 
-  updateCompetitionStatus,
-  getActiveCompetitions
+  getTargets,
+  getTargetById,
+  updateTargetStatus,
+  getActiveTargets
 } from '../controllers/competitionController.js';
 import { 
-  registerForCompetition, 
-  getRegistrationsForCompetition 
+  registerForTarget,
+  getRegistrationsForTarget
 } from '../controllers/registrationController.js';
 import authMiddleware from '../middleware/authMiddleware.js';
 
@@ -17,122 +16,84 @@ const router = express.Router();
 /**
  * @swagger
  * tags:
- *   name: Competitions
- *   description: Competition management and registration
+ *   name: TargetRegistrations
+ *   description: Target enrollment and participant registrations
  */
 
 /**
  * @swagger
- * /api/competitions:
- *   post:
- *     summary: Create a new competition
- *     tags: [Competitions]
- *     security:
- *       - BearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - title
- *               - description
- *               - deadline
- *             properties:
- *               title:
- *                 type: string
- *               description:
- *                 type: string
- *               deadline:
- *                 type: string
- *                 format: date-time
- *     responses:
- *       201:
- *         description: Competition created successfully
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Competition'
- *       403:
- *         description: Forbidden
- */
-router.post('/', authMiddleware, createCompetition);
-
-/**
- * @swagger
- * /api/competitions:
+ * /api/targets:
  *   get:
- *     summary: Get all competitions
- *     tags: [Competitions]
+ *     summary: Get all targets with participant counts
+ *     tags: [TargetRegistrations]
  *     responses:
  *       200:
- *         description: List of competitions
+ *         description: List of targets
  *         content:
  *           application/json:
  *             schema:
  *               type: array
  *               items:
- *                 $ref: '#/components/schemas/Competition'
+ *                 type: object
  */
-router.get('/', getCompetitions);
+router.get('/', getTargets);
 
 /**
  * @swagger
- * /api/competitions/active:
+ * /api/targets/active:
  *   get:
- *     summary: Get all active competitions with participant counts
- *     tags: [Competitions]
+ *     summary: Get all active targets with participant counts
+ *     tags: [TargetRegistrations]
  *     responses:
  *       200:
- *         description: List of active competitions
+ *         description: List of active targets
  *         content:
  *           application/json:
  *             schema:
  *               type: array
  *               items:
- *                 $ref: '#/components/schemas/Competition'
+ *                 type: object
  */
-router.get('/active', getActiveCompetitions);
+router.get('/active', getActiveTargets);
 
 /**
  * @swagger
- * /api/competitions/{id}:
+ * /api/targets/{id}:
  *   get:
- *     summary: Get competition by ID
- *     tags: [Competitions]
+ *     summary: Get target by ID with participant counts
+ *     tags: [TargetRegistrations]
  *     parameters:
  *       - in: path
  *         name: id
  *         schema:
  *           type: string
  *         required: true
- *         description: Competition ID
+ *         description: Target ID
  *     responses:
  *       200:
- *         description: Competition details
+ *         description: Target details
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Competition'
+ *               type: object
  *       404:
- *         description: Competition not found
+ *         description: Target not found
  */
-router.get('/:id', getCompetitionById);
+router.get('/:id', getTargetById);
 
 /**
  * @swagger
- * /api/competitions/{id}/status:
+ * /api/targets/{id}/status:
  *   patch:
- *     summary: Update competition status (Internal endpoint for Clock Service)
- *     tags: [Competitions]
+ *     summary: Update target status (Internal endpoint for Clock Service)
+ *     tags: [TargetRegistrations]
  *     parameters:
  *       - in: path
  *         name: id
  *         schema:
  *           type: string
  *         required: true
- *         description: Competition ID
+ *         description: Target ID
  *     requestBody:
  *       required: true
  *       content:
@@ -151,20 +112,20 @@ router.get('/:id', getCompetitionById);
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Competition'
+ *               type: object
  *       400:
  *         description: Invalid status
  *       404:
- *         description: Competition not found
+ *         description: Target not found
  */
-router.patch('/:id/status', updateCompetitionStatus);
+router.patch('/:id/status', updateTargetStatus);
 
 /**
  * @swagger
- * /api/competitions/{id}/register:
+ * /api/targets/{id}/register:
  *   post:
- *     summary: Register for a competition
- *     tags: [Competitions]
+ *     summary: Register for a target
+ *     tags: [TargetRegistrations]
  *     security:
  *       - BearerAuth: []
  *     parameters:
@@ -173,7 +134,7 @@ router.patch('/:id/status', updateCompetitionStatus);
  *         schema:
  *           type: string
  *         required: true
- *         description: Competition ID
+ *         description: Target ID
  *     responses:
  *       201:
  *         description: Successfully registered
@@ -186,16 +147,16 @@ router.patch('/:id/status', updateCompetitionStatus);
  *       401:
  *         description: Unauthorized
  *       404:
- *         description: Competition not found
+ *         description: Target not found
  */
-router.post('/:id/register', authMiddleware, registerForCompetition);
+router.post('/:id/register', authMiddleware, registerForTarget);
 
 /**
  * @swagger
- * /api/competitions/{id}/registrations:
+ * /api/targets/{id}/registrations:
  *   get:
- *     summary: Get all registrations for a competition
- *     tags: [Competitions]
+ *     summary: Get all registrations for a target
+ *     tags: [TargetRegistrations]
  *     security:
  *       - BearerAuth: []
  *     parameters:
@@ -204,7 +165,7 @@ router.post('/:id/register', authMiddleware, registerForCompetition);
  *         schema:
  *           type: string
  *         required: true
- *         description: Competition ID
+ *         description: Target ID
  *     responses:
  *       200:
  *         description: List of registrations
@@ -219,6 +180,6 @@ router.post('/:id/register', authMiddleware, registerForCompetition);
  *       403:
  *         description: Forbidden. Only owners can view registrations.
  */
-router.get('/:id/registrations', authMiddleware, getRegistrationsForCompetition);
+router.get('/:id/registrations', authMiddleware, getRegistrationsForTarget);
 
 export default router;

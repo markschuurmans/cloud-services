@@ -6,29 +6,29 @@ const router = express.Router();
 
 /**
  * @swagger
- * /read/competitions/active:
+ * /read/targets/active:
  *   get:
- *     summary: Get all active competitions with participant counts
+ *     summary: Get all active targets with participant counts
  *     tags: [Read]
  *     security:
  *       - BearerAuth: []
  *     responses:
  *       200:
- *         description: List of active competitions
+ *         description: List of active targets
  *         content:
  *           application/json:
  *             schema:
  *               type: array
  *               items:
- *                 $ref: '#/components/schemas/ActiveCompetition'
+ *                 $ref: '#/components/schemas/ActiveTarget'
  */
-router.get("/competitions/active", authMiddleware, readController.getActiveCompetitions);
+router.get("/targets/active", authMiddleware, readController.getActiveTargets);
 
 /**
  * @swagger
- * /read/competitions/{id}/summary:
+ * /read/targets/{id}/summary:
  *   get:
- *     summary: Get a full summary of a specific competition
+ *     summary: Get a full summary of a specific target
  *     tags: [Read]
  *     security:
  *       - BearerAuth: []
@@ -40,27 +40,27 @@ router.get("/competitions/active", authMiddleware, readController.getActiveCompe
  *           type: string
  *     responses:
  *       200:
- *         description: Competition summary including targets and top scores
+ *         description: Target summary including top scores
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/CompetitionSummary'
+ *               $ref: '#/components/schemas/TargetSummary'
  *       404:
- *         description: Competition not found
+ *         description: Target not found
  */
-router.get("/competitions/:id/summary", authMiddleware, readController.getCompetitionSummary);
+router.get("/targets/:id/summary", authMiddleware, readController.getTargetSummary);
 
 /**
  * @swagger
- * /read/leaderboard/{compId}:
+ * /read/leaderboard/{targetId}:
  *   get:
- *     summary: Get the top-10 leaderboard for a competition
+ *     summary: Get the top-10 leaderboard for a target
  *     tags: [Read]
  *     security:
  *       - BearerAuth: []
  *     parameters:
  *       - in: path
- *         name: compId
+ *         name: targetId
  *         required: true
  *         schema:
  *           type: string
@@ -74,7 +74,7 @@ router.get("/competitions/:id/summary", authMiddleware, readController.getCompet
  *               items:
  *                 $ref: '#/components/schemas/LeaderboardEntry'
  */
-router.get("/leaderboard/:compId", authMiddleware, readController.getLeaderboard);
+router.get("/leaderboard/:targetId", authMiddleware, readController.getLeaderboard);
 
 /**
  * @swagger

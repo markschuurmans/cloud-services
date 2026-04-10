@@ -1,4 +1,4 @@
-const scoreResultTemplate = ({ displayName, competitionTitle, score }) => `
+const scoreResultTemplate = ({ displayName, targetTitle, score }) => `
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -8,7 +8,7 @@ const scoreResultTemplate = ({ displayName, competitionTitle, score }) => `
 </head>
 <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #222;">
   <h2>Hi ${displayName || "deelnemer"},</h2>
-  <p>Je score voor <strong>${competitionTitle || "de competitie"}</strong> is bekend.</p>
+  <p>Je score voor <strong>${targetTitle || "de target"}</strong> is bekend.</p>
   <p><strong>Behaalde score: ${score ?? "-"}</strong></p>
   <p>Dank voor je inzending.</p>
 </body>

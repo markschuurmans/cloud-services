@@ -1,5 +1,5 @@
 import express from 'express';
-import { analyzeScore, getRanking, getScoresByUser, finalizeCompetitionScoring } from '../controllers/scoreController.js';
+import { analyzeScore, getRanking, getScoresByUser, finalizeTargetScoring } from '../controllers/scoreController.js';
 import authMiddleware from '../middleware/authMiddleware.js';
 
 const router = express.Router();
@@ -41,13 +41,13 @@ router.post('/scores/analyze', authMiddleware, analyzeScore);
 
 /**
  * @swagger
- * /api/scores/ranking/{compId}:
+ * /api/scores/ranking/target/{targetId}:
  *   get:
- *     summary: Retrieve ranking for a specific competition
+ *     summary: Retrieve ranking for a specific target
  *     tags: [Scores]
  *     parameters:
  *       - in: path
- *         name: compId
+ *         name: targetId
  *         required: true
  *         schema:
  *           type: string
@@ -55,7 +55,7 @@ router.post('/scores/analyze', authMiddleware, analyzeScore);
  *       200:
  *         description: Ordered list of rankings
  */
-router.get('/scores/ranking/:compId', getRanking);
+router.get('/scores/ranking/target/:targetId', getRanking);
 
 /**
  * @swagger
@@ -79,9 +79,9 @@ export default router;
 
 /**
  * @swagger
- * /api/scores/competition/{id}/finalize:
+ * /api/scores/target/{id}/finalize:
  *   post:
- *     summary: Finalize scoring for a competition
+ *     summary: Finalize scoring for a target
  *     tags: [Scores]
  *     parameters:
  *       - in: path
@@ -93,4 +93,4 @@ export default router;
  *       200:
  *         description: Scoring finalized
  */
-router.post('/scores/competition/:id/finalize', authMiddleware, finalizeCompetitionScoring);
+router.post('/scores/target/:id/finalize', authMiddleware, finalizeTargetScoring);

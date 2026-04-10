@@ -10,18 +10,26 @@ import mongoose from 'mongoose';
  *         id:
  *           type: string
  *           description: UUID of ObjectId door MongoDB gegenereerd
- *         competitionId:
- *           type: string
- *           description: ObjectId van de competitie waartoe deze target behoort
  *         ownerId:
  *           type: string
  *           description: ObjectId van de admin/eigenaar die de target heeft aangemaakt
  *         title:
  *           type: string
  *           description: Titel/naam van de target
+ *         description:
+ *           type: string
+ *           description: Beschrijving van de target
  *         imageUrl:
  *           type: string
  *           description: URL naar de lokaal opgeslagen referentiefoto
+ *         deadline:
+ *           type: string
+ *           format: date-time
+ *         registrationOpen:
+ *           type: boolean
+ *         status:
+ *           type: string
+ *           enum: [pending, active, finished]
  *         locationName:
  *           type: string
  *           description: Optionele naam van de locatie (voor aanwijzingen)
@@ -38,11 +46,6 @@ import mongoose from 'mongoose';
  *           format: date-time
  */
 const targetSchema = new mongoose.Schema({
-  competitionId: {
-    type: mongoose.Schema.Types.ObjectId,
-    required: true,
-    ref: 'Competition'
-  },
   ownerId: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
@@ -53,9 +56,27 @@ const targetSchema = new mongoose.Schema({
     required: true,
     trim: true
   },
+  description: {
+    type: String,
+    trim: true,
+    default: ''
+  },
   imageUrl: {
     type: String,
     required: true
+  },
+  deadline: {
+    type: Date,
+    default: null
+  },
+  registrationOpen: {
+    type: Boolean,
+    default: true
+  },
+  status: {
+    type: String,
+    enum: ['pending', 'active', 'finished'],
+    default: 'active'
   },
   locationName: {
     type: String,

@@ -9,40 +9,36 @@ const getHeaders = (req) => {
     };
 };
 
-export const getActiveCompetitions = async (req, res, next) => {
+export const getActiveTargets = async (req, res, next) => {
     try {
         const registerUrl = process.env.REGISTER_SERVICE_URL || "";
-        const scoreUrl = process.env.SCORE_SERVICE_URL || "";
-        
-        const compsRes = await axios.get(`${registerUrl}/api/competitions/active`, getHeaders(req));
-        const competitions = compsRes.data;
-        
-        res.json(competitions);
+        const targetsRes = await axios.get(`${registerUrl}/api/targets/active`, getHeaders(req));
+        const targets = targetsRes.data;
+
+        res.json(targets);
     } catch (error) {
         next(error);
     }
 };
 
-export const getCompetitionSummary = async (req, res, next) => {
+export const getTargetSummary = async (req, res, next) => {
     try {
         const { id } = req.params;
         const registerUrl = process.env.REGISTER_SERVICE_URL || "";
         const targetUrl = process.env.TARGET_SERVICE_URL || "";
         const scoreUrl = process.env.SCORE_SERVICE_URL || "";
 
-        const [compRes, targetsRes, scoresRes] = await Promise.all([
-            axios.get(`${registerUrl}/api/competitions/${id}`, getHeaders(req)).catch(() => ({ data: null })),
-            axios.get(`${targetUrl}/api/targets?competitionId=${id}`, getHeaders(req)).catch(() => ({ data: [] })),
-            axios.get(`${scoreUrl}/api/scores/ranking/${id}`, getHeaders(req)).catch(() => ({ data: [] }))
+        const [targetRes, scoresRes] = await Promise.all([
+            axios.get(`${registerUrl}/api/targets/${id}`, getHeaders(req)).catch(() => ({ data: null })),
+            axios.get(`${scoreUrl}/api/scores/ranking/target/${id}`, getHeaders(req)).catch(() => ({ data: [] }))
         ]);
 
-        if (!compRes.data) {
-            return res.status(404).json({ error: "Competition not found" });
+        if (!targetRes.data) {
+            return res.status(404).json({ error: "Target not found" });
         }
 
         res.json({
-            competition: compRes.data,
-            targets: targetsRes.data,
+            target: targetRes.data,
             topScores: scoresRes.data.slice(0, 10)
         });
     } catch (error) {
@@ -52,11 +48,11 @@ export const getCompetitionSummary = async (req, res, next) => {
 
 export const getLeaderboard = async (req, res, next) => {
     try {
-        const { compId } = req.params;
+        const { targetId } = req.params;
         const scoreUrl = process.env.SCORE_SERVICE_URL || "";
 
-        const scoresRes = await axios.get(`${scoreUrl}/api/scores/ranking/${compId}`, getHeaders(req));
-        
+        const scoresRes = await axios.get(`${scoreUrl}/api/scores/ranking/target/${targetId}`, getHeaders(req));
+
         const leaderboard = scoresRes.data
             .sort((a, b) => b.finalScore - a.finalScore)
             .slice(0, 10);

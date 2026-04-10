@@ -20,33 +20,13 @@ export const createSubmission = async (req, res, next) => {
       return res.status(400).json({ error: 'Image file is required.' });
     }
 
-    // Fetch the target to get competitionId
+    // Verify the target exists before creating a submission.
     const target = await Target.findById(targetId);
     if (!target) {
       if (req.file) fs.unlinkSync(req.file.path);
       return res.status(404).json({ error: 'Target not found.' });
     }
 
-    // Check if submission is still within deadline
-    const registerServiceUrl = process.env.REGISTER_SERVICE_URL || '';
-    try {
-      const response = await fetch(`${registerServiceUrl}/api/competitions/${target.competitionId}`, {
-        headers: { 'Authorization': req.headers.authorization }
-      });
-      if (!response.ok) {
-        throw new Error('Could not fetch competition data.');
-      }
-      const competition = await response.json();
-      
-      const deadline = new Date(competition.deadline);
-      if (new Date() > deadline) {
-        if (req.file) fs.unlinkSync(req.file.path);
-        return res.status(400).json({ error: 'The competition deadline has passed. Submissions are no longer accepted.' });
-      }
-    } catch (fetchError) {
-      console.error('Error fetching competition:', fetchError.message);
-      return res.status(500).json({ error: 'Could not verify competition deadline.' });
-    }
 
     // Generate file URL
     const baseUrl = process.env.BASE_URL || '';

@@ -1,22 +1,34 @@
 import Registration from '../models/Registration.js';
-import Competition from '../models/Competition.js';
+const TARGET_SERVICE_URL = process.env.TARGET_SERVICE_URL || '';
 
-export const registerForCompetition = async (req, res, next) => {
+async function fetchTarget(targetId, authHeader) {
+  const response = await fetch(`${TARGET_SERVICE_URL}/api/targets/${targetId}`, {
+    headers: authHeader ? { Authorization: authHeader } : {},
+  });
+
+  if (!response.ok) {
+    return null;
+  }
+
+  return response.json();
+}
+
+export const registerForTarget = async (req, res, next) => {
   try {
-    const { id: competitionId } = req.params;
+    const { id: targetId } = req.params;
     const participantId = req.user.id || req.user._id;
 
-    const competition = await Competition.findById(competitionId);
-    if (!competition) {
-      return res.status(404).json({ error: 'Competition not found.' });
+    const target = await fetchTarget(targetId, req.headers.authorization);
+    if (!target) {
+      return res.status(404).json({ error: 'Target not found.' });
     }
 
-    if (!competition.registrationOpen) {
-      return res.status(400).json({ error: 'Registration is closed for this competition.' });
+    if (!target.registrationOpen || target.status === 'finished') {
+      return res.status(400).json({ error: 'Registration is closed for this target.' });
     }
 
     const newRegistration = new Registration({
-      competitionId,
+      targetId,
       participantId,
       status: 'registered'
     });
@@ -25,21 +37,21 @@ export const registerForCompetition = async (req, res, next) => {
     res.status(201).json(savedRegistration);
   } catch (error) {
     if (error.code === 11000) {
-      return res.status(400).json({ error: 'You are already registered for this competition.' });
+      return res.status(400).json({ error: 'You are already registered for this target.' });
     }
     next(error);
   }
 };
 
-export const getRegistrationsForCompetition = async (req, res, next) => {
+export const getRegistrationsForTarget = async (req, res, next) => {
   try {
     if (req.user.role !== 'owner') {
       return res.status(403).json({ error: 'Forbidden. Only owners can view registrations.' });
     }
 
-    const { id: competitionId } = req.params;
-    
-    const registrations = await Registration.find({ competitionId });
+    const { id: targetId } = req.params;
+
+    const registrations = await Registration.find({ targetId });
     res.status(200).json(registrations);
   } catch (error) {
     next(error);
@@ -55,3 +67,14 @@ export const getRegistrationsByUser = async (req, res, next) => {
     next(error);
   }
 };
+
+export const getRegistrationsByTarget = async (req, res, next) => {
+  try {
+    const { targetId } = req.params;
+    const registrations = await Registration.find({ targetId });
+    res.status(200).json(registrations);
+  } catch (error) {
+    next(error);
+  }
+};
+

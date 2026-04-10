@@ -1,4 +1,4 @@
-const deadlineTemplate = ({ displayName, competitionTitle, deadline }) => `
+const deadlineTemplate = ({ displayName, targetTitle, deadline }) => `
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -8,7 +8,7 @@ const deadlineTemplate = ({ displayName, competitionTitle, deadline }) => `
 </head>
 <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #222;">
   <h2>Hallo ${displayName || "deelnemer"},</h2>
-  <p>De wedstrijd <strong>${competitionTitle || "jouw competitie"}</strong> is gesloten.</p>
+  <p>De target <strong>${targetTitle || "jouw target"}</strong> is gesloten.</p>
   <p>Deadline: ${deadline || "onbekend"}.</p>
   <p>Bedankt voor je deelname.</p>
 </body>

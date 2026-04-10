@@ -84,10 +84,16 @@ const validateRequired = (requiredFields, body) => {
     return missing;
 };
 
+const getTargetTitle = (body) => body.targetTitle || body.competitionTitle;
+
 export const sendRegistrationMail = async (req, res, next) => {
     try {
-        const required = ["recipientEmail", "displayName", "competitionTitle"];
+        const required = ["recipientEmail", "displayName"];
         const missing = validateRequired(required, req.body);
+
+        if (!getTargetTitle(req.body)) {
+            missing.push("targetTitle");
+        }
 
         if (missing.length) {
             return res
@@ -97,9 +103,10 @@ export const sendRegistrationMail = async (req, res, next) => {
                 });
         }
 
-        const { recipientEmail, displayName, competitionTitle } = req.body;
-        const subject = `Registratie bevestigd voor ${competitionTitle}`;
-        const html = registrationTemplate({ displayName, competitionTitle });
+        const { recipientEmail, displayName } = req.body;
+        const targetTitle = getTargetTitle(req.body);
+        const subject = `Registratie bevestigd voor ${targetTitle}`;
+        const html = registrationTemplate({ displayName, targetTitle });
 
         queueMailDelivery({
             recipientEmail,
@@ -120,8 +127,12 @@ export const sendRegistrationMail = async (req, res, next) => {
 
 export const sendCompetitionEndMail = async (req, res, next) => {
     try {
-        const required = ["recipientEmail", "displayName", "competitionTitle"];
+        const required = ["recipientEmail", "displayName"];
         const missing = validateRequired(required, req.body);
+
+        if (!getTargetTitle(req.body)) {
+            missing.push("targetTitle");
+        }
 
         if (missing.length) {
             return res
@@ -131,12 +142,13 @@ export const sendCompetitionEndMail = async (req, res, next) => {
                 });
         }
 
-        const { recipientEmail, displayName, competitionTitle, deadline } =
+        const { recipientEmail, displayName, deadline } =
             req.body;
-        const subject = `Wedstrijd gesloten: ${competitionTitle}`;
+        const targetTitle = getTargetTitle(req.body);
+        const subject = `Target gesloten: ${targetTitle}`;
         const html = deadlineTemplate({
             displayName,
-            competitionTitle,
+            targetTitle,
             deadline,
         });
 
@@ -144,7 +156,7 @@ export const sendCompetitionEndMail = async (req, res, next) => {
             recipientEmail,
             subject,
             html,
-            mailType: "competition-end",
+            mailType: "target-end",
             payload: req.body,
         });
 
@@ -162,7 +174,7 @@ export const sendScoreResultMail = async (req, res, next) => {
         const required = [
             "recipientEmail",
             "displayName",
-            "competitionTitle",
+            "targetTitle",
             "score",
         ];
         const missing = validateRequired(required, req.body);
@@ -175,12 +187,12 @@ export const sendScoreResultMail = async (req, res, next) => {
                 });
         }
 
-        const { recipientEmail, displayName, competitionTitle, score } =
+        const { recipientEmail, displayName, targetTitle, score } =
             req.body;
-        const subject = `Je score voor ${competitionTitle}`;
+        const subject = `Je score voor ${targetTitle}`;
         const html = scoreResultTemplate({
             displayName,
-            competitionTitle,
+            targetTitle,
             score,
         });
 
@@ -206,7 +218,7 @@ export const sendWinnerMail = async (req, res, next) => {
         const required = [
             "recipientEmail",
             "displayName",
-            "competitionTitle",
+            "targetTitle",
             "score",
         ];
         const missing = validateRequired(required, req.body);
@@ -219,10 +231,10 @@ export const sendWinnerMail = async (req, res, next) => {
                 });
         }
 
-        const { recipientEmail, displayName, competitionTitle, score } =
+        const { recipientEmail, displayName, targetTitle, score } =
             req.body;
-        const subject = `Gefeliciteerd winnaar van ${competitionTitle}`;
-        const html = winnerTemplate({ displayName, competitionTitle, score });
+        const subject = `Gefeliciteerd winnaar van ${targetTitle}`;
+        const html = winnerTemplate({ displayName, targetTitle, score });
 
         queueMailDelivery({
             recipientEmail,
@@ -241,17 +253,17 @@ export const sendWinnerMail = async (req, res, next) => {
     }
 };
 
-export const notifyCompetitionEnd = async (req, res, next) => {
+export const notifyTargetEnd = async (req, res, next) => {
     try {
-        const { competitionId } = req.params;
+        const { targetId } = req.params;
         const registerUrl = process.env.REGISTER_SERVICE_URL || "";
         const authUrl = process.env.AUTH_SERVICE_URL || "";
         const headers = { Authorization: req.headers.authorization };
 
-        const compRes = await axios.get(`${registerUrl}/api/competitions/${competitionId}`, { headers });
-        const competition = compRes.data;
+        const targetRes = await axios.get(`${registerUrl}/api/targets/${targetId}`, { headers });
+        const target = targetRes.data;
 
-        const regsRes = await axios.get(`${registerUrl}/api/competitions/${competitionId}/registrations`, { headers });
+        const regsRes = await axios.get(`${registerUrl}/api/targets/${targetId}/registrations`, { headers });
         const registrations = regsRes.data;
 
         if (!registrations || registrations.length === 0) {
@@ -259,26 +271,26 @@ export const notifyCompetitionEnd = async (req, res, next) => {
         }
 
         const participantIds = [...new Set(registrations.map(r => r.participantId))];
-        console.log(`[Mail Service] Notifying ${participantIds.length} unique participants for competition ${competition.title}`);
+        console.log(`[Mail Service] Notifying ${participantIds.length} unique participants for target ${target.title}`);
 
         for (const userId of participantIds) {
             try {
                 const userRes = await axios.get(`${authUrl}/api/auth/users/${userId}`, { headers });
                 const user = userRes.data;
 
-                const subject = `Wedstrijd gesloten: ${competition.title}`;
+                const subject = `Target gesloten: ${target.title}`;
                 const html = deadlineTemplate({
                     displayName: user.displayName,
-                    competitionTitle: competition.title,
-                    deadline: competition.deadline,
+                    targetTitle: target.title,
+                    deadline: target.deadline,
                 });
 
                 queueMailDelivery({
                     recipientEmail: user.email,
                     subject,
                     html,
-                    mailType: "competition-end",
-                    payload: { competitionId, userId },
+                    mailType: "target-end",
+                    payload: { targetId, userId },
                 });
             } catch (err) {
                 console.error(`[Mail Service] Failed to notify user ${userId}:`, err.message);
@@ -286,12 +298,12 @@ export const notifyCompetitionEnd = async (req, res, next) => {
         }
 
         return res.status(202).json({
-            message: `Notification process for competition ${competitionId} initiated.`,
+            message: `Notification process for target ${targetId} initiated.`,
             status: "accepted",
             participantCount: participantIds.length
         });
     } catch (error) {
-        console.error(`[Mail Service] notifyCompetitionEnd error:`, error.message);
+        console.error(`[Mail Service] notifyTargetEnd error:`, error.message);
         return next(error);
     }
 };

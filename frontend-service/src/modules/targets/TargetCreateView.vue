@@ -17,8 +17,9 @@ type CreatedTarget = {
 const router = useRouter()
 
 const form = reactive({
-  competitionId: '',
   title: '',
+  description: '',
+  deadline: '',
   locationName: '',
   tags: '',
 })
@@ -43,9 +44,16 @@ async function submitCreate() {
   }
 
   const payload = new FormData()
-  payload.append('competitionId', form.competitionId)
   payload.append('title', form.title)
   payload.append('image', imageFile.value)
+
+  if (form.description.trim()) {
+    payload.append('description', form.description.trim())
+  }
+
+  if (form.deadline) {
+    payload.append('deadline', new Date(form.deadline).toISOString())
+  }
 
   if (form.locationName.trim()) {
     payload.append('locationName', form.locationName.trim())
@@ -93,15 +101,20 @@ async function submitCreate() {
         <CardContent>
           <form class="space-y-5" @submit.prevent="submitCreate">
             <FieldGroup>
-              <Field>
-                <FieldLabel for="competitionId">Competitie ID</FieldLabel>
-                <Input id="competitionId" v-model="form.competitionId" type="text" required />
-                <FieldDescription>Mongo ObjectId van de competitie.</FieldDescription>
-              </Field>
 
               <Field>
                 <FieldLabel for="title">Titel</FieldLabel>
                 <Input id="title" v-model="form.title" type="text" required />
+              </Field>
+
+              <Field>
+                <FieldLabel for="description">Beschrijving (optioneel)</FieldLabel>
+                <Input id="description" v-model="form.description" type="text" />
+              </Field>
+
+              <Field>
+                <FieldLabel for="deadline">Deadline (optioneel)</FieldLabel>
+                <Input id="deadline" v-model="form.deadline" type="datetime-local" />
               </Field>
 
               <Field>

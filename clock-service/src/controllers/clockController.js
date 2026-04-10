@@ -1,4 +1,4 @@
-import { finalizeCompetition } from '../jobs/deadlineJob.js';
+import { finalizeTarget } from '../jobs/deadlineJob.js';
 
 let lastRunTime = null;
 
@@ -17,7 +17,7 @@ export const getStatus = (req, res) => {
   });
 };
 
-export const triggerCompetition = async (req, res, next) => {
+export const triggerTarget = async (req, res, next) => {
   try {
     if (req.user.role !== 'admin') {
       return res.status(403).json({ error: 'Only admins can manually trigger jobs.' });
@@ -25,8 +25,8 @@ export const triggerCompetition = async (req, res, next) => {
 
     const { id } = req.params;
     
-    const result = await finalizeCompetition(id);
-    
+    const result = await finalizeTarget(id);
+
     res.status(200).json({
       message: 'Workflow triggered.',
       result

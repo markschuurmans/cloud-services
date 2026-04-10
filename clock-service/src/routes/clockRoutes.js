@@ -1,5 +1,5 @@
 import express from 'express';
-import { getStatus, triggerCompetition } from '../controllers/clockController.js';
+import { getStatus, triggerTarget } from '../controllers/clockController.js';
 import authMiddleware from '../middleware/authMiddleware.js';
 
 const router = express.Router();
@@ -38,7 +38,7 @@ router.get('/status', authMiddleware, getStatus);
  * @swagger
  * /api/clock/trigger/{id}:
  *   post:
- *     summary: Manually trigger finalization for a specific competition
+ *     summary: Manually trigger finalization for a specific target
  *     tags: [Clock]
  *     security:
  *       - bearerAuth: []
@@ -48,13 +48,13 @@ router.get('/status', authMiddleware, getStatus);
  *         required: true
  *         schema:
  *           type: string
- *         description: Competition ID
+ *         description: Target ID
  *     responses:
  *       200:
  *         description: Trigger executed successfully
  *       500:
  *         description: Execution failed
  */
-router.post('/trigger/:id', authMiddleware, triggerCompetition);
+router.post('/trigger/:id', authMiddleware, triggerTarget);
 
 export default router;

@@ -2,35 +2,30 @@
  * @swagger
  * components:
  *   schemas:
- *     ActiveCompetition:
+ *     ActiveTarget:
  *       type: object
  *       properties:
- *         competitionId:
+ *         targetId:
  *           type: string
- *           description: ID of the competition
+ *           description: ID of the target
  *         title:
  *           type: string
- *           description: Title of the competition
+ *           description: Title of the target
  *         description:
  *           type: string
- *           description: Competition description
+ *           description: Target description
  *         participantsCount:
  *           type: number
  *           description: Number of currently registered participants
- *     CompetitionSummary:
+ *     TargetSummary:
  *       type: object
  *       properties:
- *         competition:
+ *         target:
  *           type: object
- *           description: Core competition details
- *         targets:
- *           type: array
- *           description: List of targets for the competition
- *           items:
- *             type: object
+ *           description: Core target details
  *         topScores:
  *           type: array
- *           description: Top scores achieved in the competition
+ *           description: Top scores achieved for the target
  *           items:
  *             type: object
  *     LeaderboardEntry:
@@ -52,10 +47,10 @@
  *           type: string
  *         totalParticipations:
  *           type: number
- *           description: Number of competitions participated in
+ *           description: Number of target enrollments
  *         averageScore:
  *           type: number
- *           description: Average score across all competitions
+ *           description: Average score across all targets
  *         winPercentage:
  *           type: number
  *           description: Percentage of times the user placed in a top spot (custom logic)

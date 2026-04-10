@@ -1,5 +1,5 @@
 import express from 'express';
-import { getRegistrationsByUser } from '../controllers/registrationController.js';
+import { getRegistrationsByTarget, getRegistrationsByUser } from '../controllers/registrationController.js';
 import authMiddleware from '../middleware/authMiddleware.js';
 
 const router = express.Router();
@@ -23,5 +23,6 @@ const router = express.Router();
  *         description: List of user registrations
  */
 router.get('/user/:userId', authMiddleware, getRegistrationsByUser);
+router.get('/target/:targetId', authMiddleware, getRegistrationsByTarget);
 
 export default router;

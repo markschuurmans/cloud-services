@@ -12,7 +12,7 @@ import mongoose from "mongoose";
  *           description: UUID of ObjectId door MongoDB gegenereerd
  *         mailType:
  *           type: string
- *           enum: [registration, competition-end, score-result, winner]
+ *           enum: [registration, target-end, score-result, winner]
  *           description: Type e-mail die verwerkt werd
  *         recipientEmail:
  *           type: string
@@ -48,7 +48,7 @@ const mailLogSchema = new mongoose.Schema(
     {
         mailType: {
             type: String,
-            enum: ["registration", "competition-end", "score-result", "winner"],
+            enum: ["registration", "target-end", "score-result", "winner"],
             required: true,
         },
         recipientEmail: {

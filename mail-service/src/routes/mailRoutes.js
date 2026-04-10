@@ -5,7 +5,7 @@ import {
     sendRegistrationMail,
     sendScoreResultMail,
     sendWinnerMail,
-    notifyCompetitionEnd,
+    notifyTargetEnd,
 } from "../controllers/mailController.js";
 
 const router = express.Router();
@@ -31,14 +31,14 @@ const router = express.Router();
  *         application/json:
  *           schema:
  *             type: object
- *             required: [recipientEmail, displayName, competitionTitle]
+ *             required: [recipientEmail, displayName, targetTitle]
  *             properties:
  *               recipientEmail:
  *                 type: string
  *                 format: email
  *               displayName:
  *                 type: string
- *               competitionTitle:
+ *               targetTitle:
  *                 type: string
  *     responses:
  *       202:
@@ -52,9 +52,9 @@ router.post("/mail/registration", authMiddleware, sendRegistrationMail);
 
 /**
  * @swagger
- * /mail/competition-end:
+ * /mail/target-end:
  *   post:
- *     summary: Send deadline/competition end notification mail
+ *     summary: Send deadline/target end notification mail
  *     tags: [Mail]
  *     security:
  *       - BearerAuth: []
@@ -64,14 +64,14 @@ router.post("/mail/registration", authMiddleware, sendRegistrationMail);
  *         application/json:
  *           schema:
  *             type: object
- *             required: [recipientEmail, displayName, competitionTitle]
+ *             required: [recipientEmail, displayName, targetTitle]
  *             properties:
  *               recipientEmail:
  *                 type: string
  *                 format: email
  *               displayName:
  *                 type: string
- *               competitionTitle:
+ *               targetTitle:
  *                 type: string
  *               deadline:
  *                 type: string
@@ -84,7 +84,7 @@ router.post("/mail/registration", authMiddleware, sendRegistrationMail);
  *       401:
  *         description: Unauthorized
  */
-router.post("/mail/competition-end", authMiddleware, sendCompetitionEndMail);
+router.post("/mail/target-end", authMiddleware, sendCompetitionEndMail);
 
 /**
  * @swagger
@@ -100,14 +100,14 @@ router.post("/mail/competition-end", authMiddleware, sendCompetitionEndMail);
  *         application/json:
  *           schema:
  *             type: object
- *             required: [recipientEmail, displayName, competitionTitle, score]
+ *             required: [recipientEmail, displayName, targetTitle, score]
  *             properties:
  *               recipientEmail:
  *                 type: string
  *                 format: email
  *               displayName:
  *                 type: string
- *               competitionTitle:
+ *               targetTitle:
  *                 type: string
  *               score:
  *                 type: number
@@ -135,14 +135,14 @@ router.post("/mail/score-result", authMiddleware, sendScoreResultMail);
  *         application/json:
  *           schema:
  *             type: object
- *             required: [recipientEmail, displayName, competitionTitle, score]
+ *             required: [recipientEmail, displayName, targetTitle, score]
  *             properties:
  *               recipientEmail:
  *                 type: string
  *                 format: email
  *               displayName:
  *                 type: string
- *               competitionTitle:
+ *               targetTitle:
  *                 type: string
  *               score:
  *                 type: number
@@ -160,13 +160,13 @@ export default router;
 
 /**
  * @swagger
- * /api/mail/competition/{competitionId}/notify:
+ * /api/mail/target/{targetId}/notify:
  *   post:
- *     summary: Trigger mass notifications for a competition end
+ *     summary: Trigger mass notifications for a target end
  *     tags: [Mail]
  *     parameters:
  *       - in: path
- *         name: competitionId
+ *         name: targetId
  *         required: true
  *         schema:
  *           type: string
@@ -174,4 +174,4 @@ export default router;
  *       202:
  *         description: Notification process initiated
  */
-router.post("/mail/competition/:competitionId/notify", authMiddleware, notifyCompetitionEnd);
+router.post("/mail/target/:targetId/notify", authMiddleware, notifyTargetEnd);
