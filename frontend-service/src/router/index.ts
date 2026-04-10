@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import TargetsView from '@/views/TargetsView.vue'
+import TargetsView from '@/modules/targets/TargetsView.vue'
 import { isAuthenticated } from '@/services/auth'
 
 const router = createRouter({
@@ -34,12 +34,20 @@ const router = createRouter({
 
     {
       path: '',
-      component: () => import('@/layouts/Layout.vue'),
+      component: () => import('@/modules/layouts/Layout.vue'),
       children: [
         {
           path: '/targets',
           name: 'targets',
           component: TargetsView,
+          meta: {
+            requiresAuth: true,
+          },
+        },
+        {
+          path: '/targets/create',
+          name: 'target-create',
+          component: () => import('@/modules/targets/TargetCreateView.vue'),
           meta: {
             requiresAuth: true,
           },

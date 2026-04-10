@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { authToken, clearToken } from '@/services/auth'
+import { authToken, clearToken } from '@/services/auth.ts'
 
 const router = useRouter()
 const isAuthenticated = computed(() => Boolean(authToken.value))
@@ -27,6 +27,13 @@ async function logout() {
             class="rounded-md border px-3 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground"
           >
             Targets
+          </router-link>
+          <router-link
+            v-if="isAuthenticated"
+            to="/targets/create"
+            class="rounded-md border px-3 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground"
+          >
+            Target aanmaken
           </router-link>
           <router-link
             v-if="!isAuthenticated"

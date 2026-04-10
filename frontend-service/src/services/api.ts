@@ -9,7 +9,7 @@ export async function apiRequest<T>(path: string, options: ApiRequestOptions = {
   const { baseUrl, ...fetchOptions } = options
   const headers = new Headers(fetchOptions.headers || {})
 
-  if (fetchOptions.body && !headers.has('Content-Type')) {
+  if (fetchOptions.body && !(fetchOptions.body instanceof FormData) && !headers.has('Content-Type')) {
     headers.set('Content-Type', 'application/json')
   }
 
