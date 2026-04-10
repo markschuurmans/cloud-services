@@ -1,52 +1,54 @@
-# Frontend Service (Vue)
+# Frontend Service (Vue + shadcn)
 
-Dit is de Vue 3 frontend voor de Photo Prestiges microservices.
+Deze frontend draait op Vue 3 (TypeScript) met de `vue-shadcn` scaffold en is gekoppeld aan de bestaande microservices-architectuur.
 
-## Architectuur
+## Wat is aangesloten
 
-De frontend gebruikt uniforme API-routes en laat de daadwerkelijke service-routing over aan de webserver:
+- Login flow via `auth-service` (`/api/auth/login`)
+- Beschermde route voor targets (`/targets`)
+- Overzicht van alle targets via `target-service` (`/api/target/targets`)
+- Uniforme frontend API-prefixes voor alle services
 
-- `/api/auth/*` -> `auth-service`
-- `/api/register/*` -> `register-service`
-- `/api/target/*` -> `target-service`
-- `/api/score/*` -> `score-service`
-- `/api/clock/*` -> `clock-service`
-- `/api/mail/*` -> `mail-service`
-- `/api/read/*` -> `read-service`
-- `/media/uploads/*` -> target uploads
+## Routing en auth
 
-In development handelt Vite dit af via `server.proxy` in `vite.config.js`.
-In productie handelt Nginx dit af via `nginx.conf`.
+- `src/router/index.ts` bevat route guards (`requiresAuth`, `guestOnly`)
+- JWT token wordt opgeslagen in `localStorage` via `src/services/auth.ts`
+- API calls lopen via `src/services/api.ts` met automatische `Authorization` header
 
-## Lokaal starten (zonder Docker)
+## Proxy setup
 
-1. Installeer dependencies:
+Development (Vite): `vite.config.ts`
+
+Production (Nginx): `nginx.conf`
+
+Gekoppelde prefixes:
+
+- `/api/auth/*`
+- `/api/register/*`
+- `/api/target/*`
+- `/api/score/*`
+- `/api/clock/*`
+- `/api/mail/*`
+- `/api/read/*`
+- `/media/uploads/*`
+
+## Lokaal frontend-only draaien
 
 ```bash
+cd /Users/mark/Projects/cloud-services/frontend-service
 npm install
-```
-
-2. Start Vite:
-
-```bash
 npm run dev
 ```
 
-## Met Docker Compose
-
-Vanaf de repo-root:
+## Met compose stack
 
 ```bash
+cd /Users/mark/Projects/cloud-services
 make dev
 ```
 
-Frontend is dan beschikbaar op `http://localhost:5173`.
-
-Voor productie-compose:
-
 ```bash
+cd /Users/mark/Projects/cloud-services
 make prod
 ```
-
-Frontend is dan beschikbaar op `http://localhost:8080`.
 
