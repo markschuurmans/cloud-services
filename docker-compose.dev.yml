@@ -1,0 +1,42 @@
+services:
+  auth-service:
+    command: npm run dev
+    volumes:
+      - ./auth-service:/usr/src/app
+      - /usr/src/app/node_modules
+
+  register-service:
+    command: npm run dev
+    volumes:
+      - ./register-service:/usr/src/app
+      - /usr/src/app/node_modules
+
+  target-service:
+    command: npm run dev
+    volumes:
+      - ./target-service:/usr/src/app
+      - /usr/src/app/node_modules
+
+  score-service:
+    command: npm run dev
+    volumes:
+      - ./score-service:/usr/src/app
+      - /usr/src/app/node_modules
+
+  clock-service:
+    command: npm run dev
+    volumes:
+      - ./clock-service:/usr/src/app
+      - /usr/src/app/node_modules
+
+  mail-service:
+    command: npm run dev
+    volumes:
+      - ./mail-service:/usr/src/app
+      - /usr/src/app/node_modules
+
+  read-service:
+    command: npm run dev
+    volumes:
+      - ./read-service:/usr/src/app
+      - /usr/src/app/node_modules
