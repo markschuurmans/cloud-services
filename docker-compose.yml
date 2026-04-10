@@ -85,5 +85,18 @@ services:
     depends_on:
       - mongodb
 
+  frontend-service:
+    build: ./frontend-service
+    ports:
+      - "8080:80"
+    depends_on:
+      - auth-service
+      - register-service
+      - target-service
+      - score-service
+      - clock-service
+      - mail-service
+      - read-service
+
 volumes:
   mongo-data:
