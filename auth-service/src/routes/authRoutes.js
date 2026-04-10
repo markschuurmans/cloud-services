@@ -6,7 +6,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /auth/register:
+ * /api/auth/register:
  *   post:
  *     summary: Nieuwe gebruiker registreren
  *     tags: [Authentication]
@@ -42,7 +42,7 @@ router.post('/register', register);
 
 /**
  * @swagger
- * /auth/login:
+ * /api/auth/login:
  *   post:
  *     summary: Inloggen
  *     tags: [Authentication]
@@ -80,7 +80,7 @@ router.post('/login', login);
 // Protected routes
 /**
  * @swagger
- * /auth/profile:
+ * /api/auth/profile:
  *   get:
  *     summary: Profiel ophalen van ingelogde gebruiker
  *     tags: [Authentication]
@@ -103,7 +103,7 @@ router.get('/profile', authMiddleware, profile);
 
 /**
  * @swagger
- * /auth/users/{id}:
+ * /api/auth/users/{id}:
  *   get:
  *     summary: Gebruiker ophalen bij ID (Interne service call)
  *     tags: [Authentication]
