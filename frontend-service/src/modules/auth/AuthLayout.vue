@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { MapPin as Icon } from "lucide-vue-next"
+import { MapPin } from "lucide-vue-next"
 </script>
 
 <template>
@@ -8,7 +8,7 @@ import { MapPin as Icon } from "lucide-vue-next"
       <div class="flex justify-center gap-2 md:justify-start">
         <div class="flex items-center gap-2 font-medium">
           <div class="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-md">
-            <Icon class="size-4" />
+            <MapPin class="size-4" />
           </div>
           MatchTheMark
         </div>

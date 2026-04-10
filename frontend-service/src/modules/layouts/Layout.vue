@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useRouter } from 'vue-router'
-import { authToken, clearToken } from '@/services/auth.ts'
+import {useRouter} from 'vue-router'
+import {clearToken} from '@/services/auth.ts'
+import {Button} from "@/components/ui/button";
+import { MapPin } from "lucide-vue-next"
 
 const router = useRouter()
-const isAuthenticated = computed(() => Boolean(authToken.value))
 
 async function logout() {
   clearToken()
@@ -16,40 +16,30 @@ async function logout() {
   <div class="min-h-screen bg-background text-foreground">
     <header class="border-b bg-card/80 backdrop-blur">
       <div class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-4">
-        <div>
-          <h1 class="text-lg font-semibold">Photo Prestiges</h1>
-          <p class="text-sm text-muted-foreground">Vue + shadcn frontend in microservices setup</p>
+        <div class="flex items-center gap-2 font-medium">
+          <div class="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-md">
+            <MapPin class="size-4" />
+          </div>
+          MatchTheMark
         </div>
 
         <nav class="flex items-center gap-2">
-          <router-link
-            to="/targets"
-            class="rounded-md border px-3 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground"
+          <Button
+              variant="default"
+              as-child
           >
-            Targets
-          </router-link>
-          <router-link
-            v-if="isAuthenticated"
-            to="/targets/create"
-            class="rounded-md border px-3 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground"
-          >
-            Target aanmaken
-          </router-link>
-          <router-link
-            v-if="!isAuthenticated"
-            to="/login"
-            class="rounded-md border px-3 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground"
-          >
-            Login
-          </router-link>
-          <button
-            v-else
-            type="button"
-            class="rounded-md bg-primary px-3 py-1.5 text-sm text-primary-foreground"
+            <router-link
+              to="/targets"
+            >
+              Targets
+            </router-link>
+          </Button>
+          <Button
+            variant="outline"
             @click="logout"
           >
             Uitloggen
-          </button>
+          </Button>
         </nav>
       </div>
     </header>
