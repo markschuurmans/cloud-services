@@ -14,10 +14,6 @@ import mongoose from 'mongoose';
  *           type: string
  *           format: email
  *           description: Uniek e-mailadres van de gebruiker
- *         role:
- *           type: string
- *           enum: [participant, owner]
- *           description: Rol van de gebruiker. Participant is een deelnemer en owner is een eigenaar van een target
  *         displayName:
  *           type: string
  *           description: Weergavenaam van de gebruiker
@@ -42,11 +38,6 @@ const userSchema = new mongoose.Schema({
   passwordHash: {
     type: String,
     required: true
-  },
-  role: {
-    type: String,
-    enum: ['participant', 'owner'],
-    default: 'participant'
   },
   displayName: {
     type: String,

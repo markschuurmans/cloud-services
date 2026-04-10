@@ -27,9 +27,6 @@ const router = express.Router();
  *                 type: string
  *               displayName:
  *                 type: string
- *               role:
- *                 type: string
- *                 enum: [participant, owner]
  *     responses:
  *       201:
  *         description: Succesvol geregistreerd

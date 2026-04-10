@@ -147,7 +147,6 @@ onMounted(fetchTargets)
 
 	  <ul v-else class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
 		<li v-for="target in sortedTargets" :key="target.id || target._id">
-      {{target}}
 		  <Card class="h-full overflow-hidden py-0">
 			<img
 			  v-if="normalizeImageUrl(target.imageUrl)"

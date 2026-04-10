@@ -45,10 +45,6 @@ export const registerForTarget = async (req, res, next) => {
 
 export const getRegistrationsForTarget = async (req, res, next) => {
   try {
-    if (req.user.role !== 'owner') {
-      return res.status(403).json({ error: 'Forbidden. Only owners can view registrations.' });
-    }
-
     const { id: targetId } = req.params;
 
     const registrations = await Registration.find({ targetId });

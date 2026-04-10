@@ -5,10 +5,6 @@ import path from 'path';
 
 export const createSubmission = async (req, res, next) => {
   try {
-    if (req.user.role !== 'participant' && req.user.role !== 'admin') {
-      return res.status(403).json({ error: 'Only participants can submit.' });
-    }
-
     const { targetId } = req.body;
 
     if (!targetId) {
@@ -80,7 +76,7 @@ export const deleteSubmission = async (req, res, next) => {
       return res.status(404).json({ error: 'Submission not found.' });
     }
 
-    if (submission.participantId.toString() !== req.user.id && req.user.role !== 'admin') {
+    if (submission.participantId.toString() !== req.user.id) {
       return res.status(403).json({ error: 'You do not have permission to delete this submission.' });
     }
 

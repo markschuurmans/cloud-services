@@ -4,7 +4,7 @@ import User from '../models/User.js';
 
 export const register = async (req, res) => {
   try {
-    const { email, password, role, displayName } = req.body;
+    const { email, password, displayName } = req.body;
 
     if (!email || !password || !displayName) {
       return res.status(400).json({ error: 'Email, password and displayName are required' });
@@ -21,7 +21,6 @@ export const register = async (req, res) => {
     const newUser = new User({
       email,
       passwordHash,
-      role: role || 'participant',
       displayName
     });
 
@@ -33,8 +32,7 @@ export const register = async (req, res) => {
         id: newUser._id,
         email: newUser.email,
         displayName: newUser.displayName,
-        role: newUser.role
-      } 
+      }
     });
   } catch (error) {
     console.error('Registration Error:', error);
@@ -66,7 +64,6 @@ export const login = async (req, res) => {
 
     const payload = {
       sub: user._id,
-      role: user.role,
       email: user.email,
       displayName: user.displayName
     };
