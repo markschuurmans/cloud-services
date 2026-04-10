@@ -12,10 +12,10 @@ services:
       dockerfile: Dockerfile
     ports:
       - "3001:3001"
+    env_file: ./auth-service/.env
     environment:
       - PORT=3001
       - MONGO_URI=mongodb://mongodb:27017/photo_prestiges_auth
-      - JWT_SECRET=supersecret123
     depends_on:
       - mongodb
 
@@ -24,6 +24,7 @@ services:
       context: ./register-service
     ports:
       - "3002:3002"
+    env_file: ./register-service/.env
     environment:
       - PORT=3002
       - MONGO_URI=mongodb://mongodb:27017/photo_prestiges_register
@@ -35,6 +36,7 @@ services:
       context: ./target-service
     ports:
       - "3003:3003"
+    env_file: ./target-service/.env
     environment:
       - PORT=3003
       - MONGO_URI=mongodb://mongodb:27017/photo_prestiges_target
@@ -48,11 +50,10 @@ services:
       context: ./score-service
     ports:
       - "3004:3004"
+    env_file: ./score-service/.env
     environment:
       - PORT=3004
       - MONGO_URI=mongodb://mongodb:27017/photo_prestiges_score
-      - IMAGGA_API_KEY=your_imagga_key
-      - IMAGGA_API_SECRET=your_imagga_secret
     depends_on:
       - mongodb
 
@@ -61,11 +62,10 @@ services:
       context: ./clock-service
     ports:
       - "3005:3005"
+    env_file: ./clock-service/.env
     environment:
       - PORT=3005
       - MONGO_URI=mongodb://mongodb:27017/photo_prestiges_clock
-      - REGISTER_SERVICE_URL=http://register-service:3002
-      - MAIL_SERVICE_URL=http://mail-service:3006
     depends_on:
       - mongodb
 
@@ -74,11 +74,10 @@ services:
       context: ./mail-service
     ports:
       - "3006:3006"
+    env_file: ./mail-service/.env
     environment:
       - PORT=3006
-      - SMTP_HOST=smtp.mailtrap.io
-      - SMTP_USER=your_user
-      - SMTP_PASS=your_pass
+      - MONGO_URI=mongodb://mongodb:27017/photo_prestiges_mail
     depends_on:
       - mongodb
 
@@ -87,6 +86,7 @@ services:
       context: ./read-service
     ports:
       - "3007:3007"
+    env_file: ./read-service/.env
     environment:
       - PORT=3007
       - MONGO_URI=mongodb://mongodb:27017/photo_prestiges_read
