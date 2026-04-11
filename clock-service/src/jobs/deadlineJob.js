@@ -2,35 +2,23 @@ import cron from 'node-cron';
 import axios from 'axios';
 import JobLog from '../models/JobLog.js';
 import { updateLastRunTime } from '../controllers/clockController.js';
+import { publishDeadlineReachedEvent } from '../messaging/rabbit.js';
 
 export const finalizeTarget = async (targetId) => {
-  const REGISTER_SERVICE = process.env.REGISTER_SERVICE_URL || '';
-  const SCORE_SERVICE = process.env.SCORE_SERVICE_URL || '';
-  const MAIL_SERVICE = process.env.MAIL_SERVICE_URL || '';
-
   try {
-    console.log(`[Clock] Starting finalization for target: ${targetId}`);
+    console.log(`[Clock] Publishing deadline event for target: ${targetId}`);
+    await publishDeadlineReachedEvent({
+      eventType: 'target.deadline.reached',
+      targetId,
+      occurredAt: new Date().toISOString(),
+    });
+    console.log(`[Clock] Deadline event published for ${targetId}.`);
 
-    // Set target status to finished.
-    await axios.patch(`${REGISTER_SERVICE}/api/targets/${targetId}/status`,
-      { status: 'finished' }
-    );
-    console.log(`[Clock] Target ${targetId} marked as finished.`);
-
-    // Trigger final scoring
-    await axios.post(`${SCORE_SERVICE}/api/scores/target/${targetId}/finalize`, {});
-    console.log(`[Clock] Final scoring triggered for ${targetId}.`);
-
-    // Trigger notifications
-    await axios.post(`${MAIL_SERVICE}/api/mail/target/${targetId}/notify`, {});
-    console.log(`[Clock] Mail notifications triggered for ${targetId}.`);
-
-    // Log success
     await JobLog.create({
       targetId,
       action: 'deadline_triggered',
       status: 'success',
-      details: 'Target successfully evaluated and finalized.'
+      details: 'Deadline event queued for asynchronous processing.'
     });
 
     return { status: 'success', targetId };
@@ -38,7 +26,6 @@ export const finalizeTarget = async (targetId) => {
     const errorMsg = error.response ? JSON.stringify(error.response.data) : error.message;
     console.error(`[Clock] Error finalizing target ${targetId}:`, errorMsg);
 
-    // Log failure
     try {
       await JobLog.create({
         targetId,
@@ -62,8 +49,8 @@ const startCronJob = () => {
     console.log(`[Clock] Running deadline check at ${new Date().toISOString()}`);
 
     try {
-      const REGISTER_SERVICE = process.env.REGISTER_SERVICE_URL || '';
-      const response = await axios.get(`${REGISTER_SERVICE}/api/targets`);
+      const TARGET_SERVICE = process.env.TARGET_SERVICE_URL || '';
+      const response = await axios.get(`${TARGET_SERVICE}/api/targets`);
       const targets = response.data;
 
       const now = new Date();

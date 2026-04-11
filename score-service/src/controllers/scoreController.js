@@ -100,12 +100,16 @@ export const getScoresByUser = async (req, res, next) => {
   }
 };
 
+export const finalizeTargetScoringById = async (id) => {
+  console.log(`[Score Service] Finalizing scoring for target ${id}`);
+  return { message: `Scoring for target ${id} finalized.` };
+};
+
 export const finalizeTargetScoring = async (req, res, next) => {
   try {
     const { id } = req.params;
-    console.log(`[Score Service] Finalizing scoring for target ${id}`);
-    // Future logic: lock scores, generate certificates, etc.
-    res.status(200).json({ message: `Scoring for target ${id} finalized.` });
+    const result = await finalizeTargetScoringById(id);
+    res.status(200).json(result);
   } catch (error) {
     next(error);
   }

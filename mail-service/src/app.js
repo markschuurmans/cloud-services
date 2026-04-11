@@ -7,6 +7,7 @@ import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from './config/swagger.js';
 import mailRoutes from './routes/mailRoutes.js';
 import errorHandler from './middleware/errorHandler.js';
+import startDeadlineConsumer from './messaging/deadlineConsumer.js';
 
 dotenv.config();
 
@@ -37,6 +38,7 @@ mongoose.connect(MONGO_URI)
         console.log('[Mail-Service] Connected to MongoDB');
         app.listen(PORT, () => {
             console.log(`[Mail-Service] Running on port ${PORT}`);
+            startDeadlineConsumer();
         });
     })
     .catch((err) => {

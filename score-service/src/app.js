@@ -9,6 +9,7 @@ import scoreRoutes from './routes/scoreRoutes.js';
 import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from './config/swagger.js';
 import errorHandler from './middleware/errorHandler.js';
+import startDeadlineConsumer from './messaging/deadlineConsumer.js';
 
 const app = express();
 
@@ -38,6 +39,7 @@ mongoose.connect(MONGO_URI)
         console.log('[Score-Service] Connected to MongoDB');
         app.listen(PORT, () => {
             console.log(`[Score-Service] Running on port ${PORT}`);
+            startDeadlineConsumer();
         });
     })
     .catch(err => {

@@ -256,53 +256,59 @@ export const sendWinnerMail = async (req, res, next) => {
 export const notifyTargetEnd = async (req, res, next) => {
     try {
         const { targetId } = req.params;
-        const registerUrl = process.env.REGISTER_SERVICE_URL || "";
-        const authUrl = process.env.AUTH_SERVICE_URL || "";
-
-        const targetRes = await axios.get(`${registerUrl}/api/targets/${targetId}`);
-        const target = targetRes.data;
-
-        const regsRes = await axios.get(`${registerUrl}/api/targets/${targetId}/registrations`);
-        const registrations = regsRes.data;
-
-        if (!registrations || registrations.length === 0) {
-            return res.status(200).json({ message: "No participants to notify." });
-        }
-
-        const participantIds = [...new Set(registrations.map(r => r.participantId))];
-        console.log(`[Mail Service] Notifying ${participantIds.length} unique participants for target ${target.title}`);
-
-        for (const userId of participantIds) {
-            try {
-                const userRes = await axios.get(`${authUrl}/api/auth/users/${userId}`);
-                const user = userRes.data;
-
-                const subject = `Target gesloten: ${target.title}`;
-                const html = deadlineTemplate({
-                    displayName: user.displayName,
-                    targetTitle: target.title,
-                    deadline: target.deadline,
-                });
-
-                queueMailDelivery({
-                    recipientEmail: user.email,
-                    subject,
-                    html,
-                    mailType: "target-end",
-                    payload: { targetId, userId },
-                });
-            } catch (err) {
-                console.error(`[Mail Service] Failed to notify user ${userId}:`, err.message);
-            }
-        }
-
+        const participantCount = await notifyTargetEndById(targetId);
         return res.status(202).json({
             message: `Notification process for target ${targetId} initiated.`,
             status: "accepted",
-            participantCount: participantIds.length
+            participantCount
         });
     } catch (error) {
         console.error(`[Mail Service] notifyTargetEnd error:`, error.message);
         return next(error);
     }
+};
+
+export const notifyTargetEndById = async (targetId) => {
+    const registerUrl = process.env.REGISTER_SERVICE_URL || "";
+    const authUrl = process.env.AUTH_SERVICE_URL || "";
+    const targetUrl = process.env.TARGET_SERVICE_URL || "";
+
+    const targetRes = await axios.get(`${targetUrl}/api/targets/${targetId}`);
+    const target = targetRes.data;
+
+    const regsRes = await axios.get(`${registerUrl}/api/registrations/target/${targetId}`);
+    const registrations = regsRes.data;
+
+    if (!registrations || registrations.length === 0) {
+        return 0;
+    }
+
+    const participantIds = [...new Set(registrations.map((r) => r.participantId))];
+    console.log(`[Mail Service] Notifying ${participantIds.length} unique participants for target ${target.title}`);
+
+    for (const userId of participantIds) {
+        try {
+            const userRes = await axios.get(`${authUrl}/api/auth/users/${userId}`);
+            const user = userRes.data;
+
+            const subject = `Target gesloten: ${target.title}`;
+            const html = deadlineTemplate({
+                displayName: user.displayName,
+                targetTitle: target.title,
+                deadline: target.deadline,
+            });
+
+            queueMailDelivery({
+                recipientEmail: user.email,
+                subject,
+                html,
+                mailType: "target-end",
+                payload: { targetId, userId },
+            });
+        } catch (err) {
+            console.error(`[Mail Service] Failed to notify user ${userId}:`, err.message);
+        }
+    }
+
+    return participantIds.length;
 };

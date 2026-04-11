@@ -9,6 +9,7 @@
     "dev": "nodemon src/app.js"
   },
   "dependencies": {
+    "amqplib": "^0.10.8",
     "axios": "^1.7.7",
     "cors": "^2.8.6",
     "dotenv": "^16.4.5",

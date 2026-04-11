@@ -1,5 +1,5 @@
 import express from 'express';
-import { createTarget, deleteTarget, getTargets, getTargetById } from '../controllers/targetController.js';
+import { createTarget, deleteTarget, getTargets, getTargetById, updateTargetStatus } from '../controllers/targetController.js';
 import { createSubmission, deleteSubmission, getSubmissions, getSubmissionById } from '../controllers/submissionController.js';
 import { upload } from '../config/multer.js';
 
@@ -80,6 +80,8 @@ router.get('/targets', getTargets);
  *         description: Target not found
  */
 router.get('/targets/:id', getTargetById);
+
+router.patch('/targets/:id/status', updateTargetStatus);
 
 /**
  * @swagger

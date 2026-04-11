@@ -6,6 +6,14 @@ services:
     volumes:
       - mongo-data:/data/db
 
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+
   auth-service:
     build: ./auth-service
     env_file: ./auth-service/.env
@@ -32,10 +40,12 @@ services:
       - MONGO_URI=mongodb://mongodb:27017/photo_prestiges_target
       - SCORE_SERVICE_URL=http://score-service:3004
       - BASE_URL=http://localhost:3003
+      - RABBITMQ_URL=amqp://rabbitmq:5672
     volumes:
       - ./target-service/src/uploads:/usr/src/app/src/uploads
     depends_on:
       - mongodb
+      - rabbitmq
 
   score-service:
     build: ./score-service
@@ -44,20 +54,22 @@ services:
       - PORT=3004
       - MONGO_URI=mongodb://mongodb:27017/photo_prestiges_score
       - TARGET_SERVICE_URL=http://target-service:3003
+      - RABBITMQ_URL=amqp://rabbitmq:5672
     depends_on:
       - target-service
       - mongodb
+      - rabbitmq
 
   clock-service:
     build: ./clock-service
     environment:
       - PORT=3005
       - MONGO_URI=mongodb://mongodb:27017/photo_prestiges_clock
-      - REGISTER_SERVICE_URL=http://register-service:3002
-      - SCORE_SERVICE_URL=http://score-service:3004
-      - MAIL_SERVICE_URL=http://mail-service:3006
+      - TARGET_SERVICE_URL=http://target-service:3003
+      - RABBITMQ_URL=amqp://rabbitmq:5672
     depends_on:
       - mongodb
+      - rabbitmq
 
   mail-service:
     build: ./mail-service
@@ -67,8 +79,11 @@ services:
       - MONGO_URI=mongodb://mongodb:27017/photo_prestiges_mail
       - REGISTER_SERVICE_URL=http://register-service:3002
       - AUTH_SERVICE_URL=http://auth-service:3001
+      - TARGET_SERVICE_URL=http://target-service:3003
+      - RABBITMQ_URL=amqp://rabbitmq:5672
     depends_on:
       - mongodb
+      - rabbitmq
 
   read-service:
     build: ./read-service
@@ -105,3 +120,4 @@ services:
 
 volumes:
   mongo-data:
+  rabbitmq-data:

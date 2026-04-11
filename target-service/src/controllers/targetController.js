@@ -96,5 +96,35 @@ export const getTargetById = async (req, res, next) => {
     }
   };
 
+export const updateTargetStatusById = async (id, status) => {
+  const target = await Target.findById(id);
+  if (!target) {
+    throw new Error('Target not found.');
+  }
+
+  target.status = status;
+  await target.save();
+  return target;
+};
+
+export const updateTargetStatus = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    if (!status) {
+      return res.status(400).json({ error: 'status is required.' });
+    }
+
+    const target = await updateTargetStatusById(id, status);
+    return res.status(200).json(target);
+  } catch (error) {
+    if (error.message === 'Target not found.') {
+      return res.status(404).json({ error: error.message });
+    }
+    return next(error);
+  }
+};
+
 
 

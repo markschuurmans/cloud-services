@@ -62,6 +62,11 @@ const targetSchema = new mongoose.Schema({
   locationName: {
     type: String,
     trim: true
+  },
+  status: {
+    type: String,
+    enum: ['active', 'finished'],
+    default: 'active'
   }
 }, {
   timestamps: true,
