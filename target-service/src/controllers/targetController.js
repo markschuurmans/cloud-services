@@ -4,11 +4,7 @@ import path from 'path';
 
 export const createTarget = async (req, res, next) => {
   try {
-    // if (req.user.role !== 'owner' && req.user.role !== 'admin') {
-    //   return res.status(403).json({ error: 'Only owners or admins can create targets.' });
-    // }
-
-    const { title, description, locationName, tags, deadline, registrationOpen, status } = req.body;
+    const { title, description, locationName, tags, deadline, registrationOpen } = req.body;
 
     if (!req.file) {
       return res.status(400).json({ error: 'Image file is required.' });
@@ -28,7 +24,6 @@ export const createTarget = async (req, res, next) => {
       imageUrl,
       deadline: deadline ? new Date(deadline) : null,
       registrationOpen: registrationOpen === undefined ? true : registrationOpen !== 'false',
-      status: status || 'active',
       locationName,
       tags: parsedTags || []
     });
@@ -97,30 +92,5 @@ export const getTargetById = async (req, res, next) => {
     }
   };
 
-export const updateTargetStatus = async (req, res, next) => {
-  try {
-    const { status } = req.body;
-    if (!status || !['pending', 'active', 'finished'].includes(status)) {
-      return res.status(400).json({ error: 'Invalid or missing status.' });
-    }
 
-    const updates = {
-      status,
-      registrationOpen: status !== 'finished',
-    };
-
-    const target = await Target.findByIdAndUpdate(req.params.id, updates, {
-      new: true,
-      runValidators: true,
-    });
-
-    if (!target) {
-      return res.status(404).json({ error: 'Target not found.' });
-    }
-
-    return res.status(200).json(target);
-  } catch (error) {
-    next(error);
-  }
-};
 

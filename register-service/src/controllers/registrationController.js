@@ -23,7 +23,7 @@ export const registerForTarget = async (req, res, next) => {
       return res.status(404).json({ error: 'Target not found.' });
     }
 
-    if (!target.registrationOpen || target.status === 'finished') {
+    if (!target.registrationOpen) {
       return res.status(400).json({ error: 'Registration is closed for this target.' });
     }
 

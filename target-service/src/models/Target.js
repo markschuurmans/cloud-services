@@ -27,9 +27,6 @@ import mongoose from 'mongoose';
  *           format: date-time
  *         registrationOpen:
  *           type: boolean
- *         status:
- *           type: string
- *           enum: [pending, active, finished]
  *         locationName:
  *           type: string
  *           description: Optionele naam van de locatie (voor aanwijzingen)
@@ -72,11 +69,6 @@ const targetSchema = new mongoose.Schema({
   registrationOpen: {
     type: Boolean,
     default: true
-  },
-  status: {
-    type: String,
-    enum: ['pending', 'active', 'finished'],
-    default: 'active'
   },
   locationName: {
     type: String,
