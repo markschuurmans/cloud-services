@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { HTMLAttributes, reactive, ref } from "vue";
+import { HTMLAttributes, reactive } from "vue";
+import { storeToRefs } from "pinia";
 import { useRoute, useRouter } from "vue-router";
-import { apiRequest } from "@/services/api.ts";
-import { setToken } from "@/services/auth.ts";
+import { useAuthStore } from "@/modules/auth/store/auth.store.ts";
 import { Field, FieldDescription, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { cn } from "@/lib/utils.ts";
 import { Button } from "@/components/ui/button";
@@ -12,47 +12,27 @@ const props = defineProps<{
   class?: HTMLAttributes["class"];
 }>();
 
-type LoginResponse = {
-  message: string;
-  token: string;
-};
-
 const router = useRouter();
 const route = useRoute();
+const authStore = useAuthStore();
+const { loading, error } = storeToRefs(authStore);
 
 const form = reactive({
   email: "",
   password: "",
 });
 
-const error = ref("");
-const loading = ref(false);
-const authServiceBaseUrl = import.meta.env.VITE_AUTH_SERVICE_URL || "http://localhost:3001";
-
 async function submitLogin() {
-  loading.value = true;
-  error.value = "";
+  authStore.clearMessages();
 
   try {
-    console.log(authServiceBaseUrl);
-    const data = await apiRequest<LoginResponse>("/api/auth/login", {
-      method: "POST",
-      baseUrl: authServiceBaseUrl,
-      body: JSON.stringify({
-        email: form.email,
-        password: form.password,
-      }),
-    });
-
-    setToken(data.token || "");
+    await authStore.login(form.email, form.password);
 
     const redirectTarget =
       typeof route.query.redirect === "string" ? route.query.redirect : "/targets";
     await router.push(redirectTarget);
-  } catch (err) {
-    error.value = err instanceof Error ? err.message : "Login mislukt";
-  } finally {
-    loading.value = false;
+  } catch {
+    // Store state already contains a user-facing error message.
   }
 }
 </script>

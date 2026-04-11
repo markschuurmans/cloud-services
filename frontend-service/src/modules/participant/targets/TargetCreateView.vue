@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { reactive, ref } from "vue";
+import { storeToRefs } from "pinia";
 import { useRouter } from "vue-router";
 import { ArrowLeft } from "lucide-vue-next";
-import { apiRequest } from "@/services/api";
+import { useTargetsStore } from "@/modules/participant/targets/store/targets.store.ts";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -15,13 +16,9 @@ import {
 import { Field, FieldDescription, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 
-type CreatedTarget = {
-  id?: string;
-  _id?: string;
-  title: string;
-};
-
 const router = useRouter();
+const targetsStore = useTargetsStore();
+const { createLoading, error } = storeToRefs(targetsStore);
 
 const form = reactive({
   title: "",
@@ -32,8 +29,6 @@ const form = reactive({
 });
 
 const imageFile = ref<File | null>(null);
-const loading = ref(false);
-const error = ref("");
 
 function onImageChange(event: Event) {
   const target = event.target as HTMLInputElement;
@@ -41,46 +36,26 @@ function onImageChange(event: Event) {
 }
 
 async function submitCreate() {
-  loading.value = true;
-  error.value = "";
+  targetsStore.clearError();
 
   if (!imageFile.value) {
-    error.value = "Selecteer een afbeelding.";
-    loading.value = false;
+    targetsStore.error = "Selecteer een afbeelding.";
     return;
   }
 
-  const payload = new FormData();
-  payload.append("title", form.title);
-  payload.append("image", imageFile.value);
-
-  if (form.description.trim()) {
-    payload.append("description", form.description.trim());
-  }
-
-  if (form.deadline) {
-    payload.append("deadline", new Date(form.deadline).toISOString());
-  }
-
-  if (form.locationName.trim()) {
-    payload.append("locationName", form.locationName.trim());
-  }
-
-  if (form.tags.trim()) {
-    payload.append("tags", form.tags.trim());
-  }
-
   try {
-    await apiRequest<CreatedTarget>("/api/target/targets", {
-      method: "POST",
-      body: payload,
+    await targetsStore.createTarget({
+      title: form.title,
+      description: form.description,
+      deadline: form.deadline,
+      locationName: form.locationName,
+      tags: form.tags,
+      imageFile: imageFile.value,
     });
 
     await router.push({ name: "targets" });
-  } catch (err) {
-    error.value = err instanceof Error ? err.message : "Target aanmaken mislukt";
-  } finally {
-    loading.value = false;
+  } catch {
+    // Store state already contains a user-facing error message.
   }
 }
 </script>
@@ -152,8 +127,8 @@ async function submitCreate() {
             </p>
 
             <CardFooter class="px-0 pb-0">
-              <Button type="submit" :disabled="loading" class="w-full">
-                {{ loading ? "Target wordt aangemaakt..." : "Target aanmaken" }}
+              <Button type="submit" :disabled="createLoading" class="w-full">
+                {{ createLoading ? "Target wordt aangemaakt..." : "Target aanmaken" }}
               </Button>
             </CardFooter>
           </form>

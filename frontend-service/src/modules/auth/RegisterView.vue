@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { HTMLAttributes, reactive, ref } from "vue";
+import { HTMLAttributes, reactive } from "vue";
+import { storeToRefs } from "pinia";
 import { useRouter } from "vue-router";
-import { apiRequest } from "@/services/api.ts";
+import { useAuthStore } from "@/modules/auth/store/auth.store.ts";
 import { Field, FieldDescription, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { cn } from "@/lib/utils.ts";
 import { Button } from "@/components/ui/button";
@@ -11,16 +12,9 @@ const props = defineProps<{
   class?: HTMLAttributes["class"];
 }>();
 
-type RegisterResponse = {
-  message: string;
-  user: {
-    id: string;
-    email: string;
-    displayName: string;
-  };
-};
-
 const router = useRouter();
+const authStore = useAuthStore();
+const { loading, error, success } = storeToRefs(authStore);
 
 const form = reactive({
   displayName: "",
@@ -28,33 +22,14 @@ const form = reactive({
   password: "",
 });
 
-const error = ref("");
-const success = ref("");
-const loading = ref(false);
-const authServiceBaseUrl = import.meta.env.VITE_AUTH_SERVICE_URL || "http://localhost:3001";
-
 async function submitRegister() {
-  loading.value = true;
-  error.value = "";
-  success.value = "";
+  authStore.clearMessages();
 
   try {
-    const data = await apiRequest<RegisterResponse>("/api/auth/register", {
-      method: "POST",
-      baseUrl: authServiceBaseUrl,
-      body: JSON.stringify({
-        displayName: form.displayName,
-        email: form.email,
-        password: form.password,
-      }),
-    });
-
-    success.value = data.message || "Registratie gelukt. Je kunt nu inloggen.";
+    await authStore.register(form.displayName, form.email, form.password);
     await router.push({ name: "login", query: { registered: "1" } });
-  } catch (err) {
-    error.value = err instanceof Error ? err.message : "Registratie mislukt";
-  } finally {
-    loading.value = false;
+  } catch {
+    // Store state already contains a user-facing error message.
   }
 }
 </script>

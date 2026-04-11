@@ -1,13 +1,19 @@
 import { createRouter, createWebHistory } from "vue-router";
-import TargetsView from "@/modules/targets/TargetsView.vue";
+import TargetsView from "@/modules/participant/targets/TargetsView.vue";
 import { isAuthenticated } from "@/services/auth";
 
 const router = createRouter({
   history: createWebHistory(),
   routes: [
     {
-      path: "/",
-      redirect: "/targets",
+      path: "",
+      redirect: (to) => {
+        if (isAuthenticated()) {
+          return { name: "targets" };
+        } else {
+          return { name: "login", query: { redirect: to.fullPath } };
+        }
+      },
     },
     {
       path: "",
@@ -34,7 +40,7 @@ const router = createRouter({
 
     {
       path: "",
-      component: () => import("@/modules/layouts/Layout.vue"),
+      component: () => import("@/modules/participant/ParticipantLayout.vue"),
       children: [
         {
           path: "/targets",
@@ -47,12 +53,16 @@ const router = createRouter({
         {
           path: "/targets/create",
           name: "target-create",
-          component: () => import("@/modules/targets/TargetCreateView.vue"),
+          component: () => import("@/modules/participant/targets/TargetCreateView.vue"),
           meta: {
             requiresAuth: true,
           },
         },
       ],
+    },
+    {
+      path: "/:pathMatch(.*)*",
+      redirect: "/",
     },
   ],
 });

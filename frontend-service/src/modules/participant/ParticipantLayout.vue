@@ -26,8 +26,8 @@ async function logout() {
         </div>
 
         <nav class="flex items-center gap-2">
-          <Button variant="default" as-child>
-            <router-link to="/targets"> Targets </router-link>
+          <Button variant="link" as-child>
+            <router-link to="/targets">Targets</router-link>
           </Button>
           <Button variant="outline" @click="logout"> Uitloggen </Button>
         </nav>
