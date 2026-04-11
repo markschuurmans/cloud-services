@@ -16,7 +16,7 @@ async function fetchTarget(targetId, authHeader) {
 export const registerForTarget = async (req, res, next) => {
   try {
     const { id: targetId } = req.params;
-    const participantId = req.user.id || req.user._id;
+    const participantId = req.user.sub;
 
     const target = await fetchTarget(targetId, req.headers.authorization);
     if (!target) {
