@@ -65,10 +65,10 @@ async function submitLogin() {
           {{ loading ? "Bezig met inloggen..." : "Login" }}
         </Button>
         <FieldDescription class="text-center">
-          Neg geen account?
-          <router-link :to="{ name: 'register' }" class="underline underline-offset-2"
-            >Aanmelden</router-link
-          >
+          Nog geen account?
+          <router-link :to="{ name: 'register' }" class="underline underline-offset-2">
+            Aanmelden
+          </router-link>
         </FieldDescription>
       </Field>
     </FieldGroup>
