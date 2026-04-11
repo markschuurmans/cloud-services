@@ -12,7 +12,7 @@ import { MapPin } from "lucide-vue-next";
           >
             <MapPin class="size-4" />
           </div>
-          MatchTheMark
+          Photo prestiges
         </div>
       </div>
       <div class="flex flex-1 items-center justify-center">

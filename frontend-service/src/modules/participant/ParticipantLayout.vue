@@ -22,7 +22,7 @@ async function logout() {
           >
             <MapPin class="size-4" />
           </div>
-          MatchTheMark
+          Photo prestiges
         </div>
 
         <nav class="flex items-center gap-2">
