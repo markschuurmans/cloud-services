@@ -30,7 +30,7 @@ export const createSubmission = async (req, res, next) => {
 
     const newSubmission = new Submission({
       targetId,
-      participantId: req.user.id,
+      participantId: req.user.sub,
       imageUrl,
       status: 'pending'
     });
@@ -76,7 +76,7 @@ export const deleteSubmission = async (req, res, next) => {
       return res.status(404).json({ error: 'Submission not found.' });
     }
 
-    if (submission.participantId.toString() !== req.user.id) {
+    if (submission.participantId.toString() !== req.user.sub) {
       return res.status(403).json({ error: 'You do not have permission to delete this submission.' });
     }
 

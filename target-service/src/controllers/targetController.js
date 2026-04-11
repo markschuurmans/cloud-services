@@ -52,7 +52,7 @@ export const deleteTarget = async (req, res, next) => {
       return res.status(404).json({ error: 'Target not found.' });
     }
 
-    if (target.ownerId.toString() !== req.user.id) {
+    if (target.ownerId.toString() !== req.user.sub) {
       return res.status(403).json({ error: 'You do not have permission to delete this target.' });
     }
 
