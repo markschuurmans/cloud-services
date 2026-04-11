@@ -43,8 +43,8 @@ export const analyzeScore = async (req, res, next) => {
     }
 
     // Run Imagga analysis
-    const targetTagsRaw = await getImaggaTags(target.imageUrl);
-    const submissionTagsRaw = await getImaggaTags(submission.imageUrl);
+    const targetTagsRaw = await getImaggaTags(targetServiceUrl + target.imageUrl);
+    const submissionTagsRaw = await getImaggaTags(targetServiceUrl + submission.imageUrl);
 
     const imaggaMatchPercent = calculateImaggaMatch(targetTagsRaw, submissionTagsRaw);
     const finalScore = imaggaMatchPercent * timeFactor;
@@ -52,7 +52,6 @@ export const analyzeScore = async (req, res, next) => {
     const simplifiedTargetTags = targetTagsRaw.filter(t => t.confidence > 30).map(t => t.tag.en);
     const simplifiedSubmissionTags = submissionTagsRaw.filter(t => t.confidence > 30).map(t => t.tag.en);
 
-    // Save new score
     const newScore = new Score({
       submissionId,
       targetId: target.id || target._id,
