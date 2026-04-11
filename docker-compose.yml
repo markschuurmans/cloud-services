@@ -17,7 +17,6 @@ services:
 
   register-service:
     build: ./register-service
-    env_file: ./register-service/.env
     environment:
       - PORT=3002
       - MONGO_URI=mongodb://mongodb:27017/photo_prestiges_register
@@ -28,11 +27,11 @@ services:
 
   target-service:
     build: ./target-service
-    env_file: ./target-service/.env
     environment:
       - PORT=3003
       - MONGO_URI=mongodb://mongodb:27017/photo_prestiges_target
       - SCORE_SERVICE_URL=http://score-service:3004
+      - BASE_URL=http://localhost:3003
     volumes:
       - ./target-service/src/uploads:/usr/src/app/src/uploads
     depends_on:
@@ -51,7 +50,6 @@ services:
 
   clock-service:
     build: ./clock-service
-    env_file: ./clock-service/.env
     environment:
       - PORT=3005
       - MONGO_URI=mongodb://mongodb:27017/photo_prestiges_clock
@@ -74,7 +72,6 @@ services:
 
   read-service:
     build: ./read-service
-    env_file: ./read-service/.env
     environment:
       - PORT=3007
       - MONGO_URI=mongodb://mongodb:27017/photo_prestiges_read
