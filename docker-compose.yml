@@ -25,8 +25,10 @@ services:
     environment:
       - PORT=3002
       - MONGO_URI=mongodb://mongodb:27017/photo_prestiges_register
+      - TARGET_SERVICE_URL=http://target-service:3003
     depends_on:
       - mongodb
+      - target-service
 
   target-service:
     build: ./target-service
