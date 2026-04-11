@@ -16,10 +16,6 @@ import mongoose from 'mongoose';
  *         participantId:
  *           type: string
  *           description: ID van de deelnemer
- *         status:
- *           type: string
- *           enum: [registered, cancelled, waitlisted]
- *           description: Huidige status van de inschrijving
  *         createdAt:
  *           type: string
  *           format: date-time
@@ -37,11 +33,6 @@ const registrationSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     required: true,
     ref: 'User'
-  },
-  status: {
-    type: String,
-    enum: ['registered', 'cancelled', 'waitlisted'],
-    default: 'registered'
   }
 }, {
   timestamps: true,

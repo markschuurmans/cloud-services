@@ -29,8 +29,7 @@ export const registerForTarget = async (req, res, next) => {
 
     const newRegistration = new Registration({
       targetId,
-      participantId,
-      status: 'registered'
+      participantId
     });
 
     const savedRegistration = await newRegistration.save();
