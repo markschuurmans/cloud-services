@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { MapPin } from "lucide-vue-next"
+import { MapPin } from "lucide-vue-next";
 </script>
 
 <template>
@@ -7,7 +7,9 @@ import { MapPin } from "lucide-vue-next"
     <div class="flex flex-col gap-4 p-6 md:p-10">
       <div class="flex justify-center gap-2 md:justify-start">
         <div class="flex items-center gap-2 font-medium">
-          <div class="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-md">
+          <div
+            class="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-md"
+          >
             <MapPin class="size-4" />
           </div>
           MatchTheMark
@@ -21,10 +23,10 @@ import { MapPin } from "lucide-vue-next"
     </div>
     <div class="bg-muted relative hidden lg:block">
       <img
-          src="/church-cover.jpg"
-          alt="Image"
-          class="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
-      >
+        src="/church-cover.jpg"
+        alt="Image"
+        class="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
+      />
     </div>
   </div>
 </template>

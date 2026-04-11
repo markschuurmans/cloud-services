@@ -1,79 +1,86 @@
 <script setup lang="ts">
-import { reactive, ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { ArrowLeft } from 'lucide-vue-next'
-import { apiRequest } from '@/services/api'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import { Field, FieldDescription, FieldGroup, FieldLabel } from '@/components/ui/field'
-import { Input } from '@/components/ui/input'
+import { reactive, ref } from "vue";
+import { useRouter } from "vue-router";
+import { ArrowLeft } from "lucide-vue-next";
+import { apiRequest } from "@/services/api";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Field, FieldDescription, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
 
 type CreatedTarget = {
-  id?: string
-  _id?: string
-  title: string
-}
+  id?: string;
+  _id?: string;
+  title: string;
+};
 
-const router = useRouter()
+const router = useRouter();
 
 const form = reactive({
-  title: '',
-  description: '',
-  deadline: '',
-  locationName: '',
-  tags: '',
-})
+  title: "",
+  description: "",
+  deadline: "",
+  locationName: "",
+  tags: "",
+});
 
-const imageFile = ref<File | null>(null)
-const loading = ref(false)
-const error = ref('')
+const imageFile = ref<File | null>(null);
+const loading = ref(false);
+const error = ref("");
 
 function onImageChange(event: Event) {
-  const target = event.target as HTMLInputElement
-  imageFile.value = target.files?.[0] || null
+  const target = event.target as HTMLInputElement;
+  imageFile.value = target.files?.[0] || null;
 }
 
 async function submitCreate() {
-  loading.value = true
-  error.value = ''
+  loading.value = true;
+  error.value = "";
 
   if (!imageFile.value) {
-    error.value = 'Selecteer een afbeelding.'
-    loading.value = false
-    return
+    error.value = "Selecteer een afbeelding.";
+    loading.value = false;
+    return;
   }
 
-  const payload = new FormData()
-  payload.append('title', form.title)
-  payload.append('image', imageFile.value)
+  const payload = new FormData();
+  payload.append("title", form.title);
+  payload.append("image", imageFile.value);
 
   if (form.description.trim()) {
-    payload.append('description', form.description.trim())
+    payload.append("description", form.description.trim());
   }
 
   if (form.deadline) {
-    payload.append('deadline', new Date(form.deadline).toISOString())
+    payload.append("deadline", new Date(form.deadline).toISOString());
   }
 
   if (form.locationName.trim()) {
-    payload.append('locationName', form.locationName.trim())
+    payload.append("locationName", form.locationName.trim());
   }
 
   if (form.tags.trim()) {
-    payload.append('tags', form.tags.trim())
+    payload.append("tags", form.tags.trim());
   }
 
   try {
-    await apiRequest<CreatedTarget>('/api/target/targets', {
-      method: 'POST',
+    await apiRequest<CreatedTarget>("/api/target/targets", {
+      method: "POST",
       body: payload,
-    })
+    });
 
-    await router.push({ name: 'targets' })
+    await router.push({ name: "targets" });
   } catch (err) {
-    error.value = err instanceof Error ? err.message : 'Target aanmaken mislukt'
+    error.value = err instanceof Error ? err.message : "Target aanmaken mislukt";
   } finally {
-    loading.value = false
+    loading.value = false;
   }
 }
 </script>
@@ -84,7 +91,9 @@ async function submitCreate() {
       <div class="flex items-center justify-between gap-3">
         <div>
           <h1 class="text-2xl font-semibold tracking-tight">Target aanmaken</h1>
-          <p class="text-sm text-muted-foreground">Upload een nieuwe target-afbeelding en metadata.</p>
+          <p class="text-sm text-muted-foreground">
+            Upload een nieuwe target-afbeelding en metadata.
+          </p>
         </div>
         <Button type="button" variant="outline" @click="router.push({ name: 'targets' })">
           <ArrowLeft class="mr-2 size-4" />
@@ -95,13 +104,14 @@ async function submitCreate() {
       <Card>
         <CardHeader>
           <CardTitle>Nieuwe target</CardTitle>
-          <CardDescription>Alle verplichte velden invullen en een afbeelding uploaden (max 5MB).</CardDescription>
+          <CardDescription
+            >Alle verplichte velden invullen en een afbeelding uploaden (max 5MB).</CardDescription
+          >
         </CardHeader>
 
         <CardContent>
           <form class="space-y-5" @submit.prevent="submitCreate">
             <FieldGroup>
-
               <Field>
                 <FieldLabel for="title">Titel</FieldLabel>
                 <Input id="title" v-model="form.title" type="text" required />
@@ -134,13 +144,16 @@ async function submitCreate() {
               </Field>
             </FieldGroup>
 
-            <p v-if="error" class="rounded-md border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
+            <p
+              v-if="error"
+              class="rounded-md border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive"
+            >
               {{ error }}
             </p>
 
             <CardFooter class="px-0 pb-0">
               <Button type="submit" :disabled="loading" class="w-full">
-                {{ loading ? 'Target wordt aangemaakt...' : 'Target aanmaken' }}
+                {{ loading ? "Target wordt aangemaakt..." : "Target aanmaken" }}
               </Button>
             </CardFooter>
           </form>
@@ -149,4 +162,3 @@ async function submitCreate() {
     </section>
   </main>
 </template>
-

@@ -1,73 +1,72 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import TargetsView from '@/modules/targets/TargetsView.vue'
-import { isAuthenticated } from '@/services/auth'
+import { createRouter, createWebHistory } from "vue-router";
+import TargetsView from "@/modules/targets/TargetsView.vue";
+import { isAuthenticated } from "@/services/auth";
 
 const router = createRouter({
   history: createWebHistory(),
   routes: [
     {
-      path: '/',
-      redirect: '/targets',
+      path: "/",
+      redirect: "/targets",
     },
     {
-      path: '',
-      component: () => import('@/modules/auth/AuthLayout.vue'),
+      path: "",
+      component: () => import("@/modules/auth/AuthLayout.vue"),
       children: [
         {
-          path: '/login',
-          name: 'login',
+          path: "/login",
+          name: "login",
           component: () => import("@/modules/auth/LoginView.vue"),
           meta: {
             guestOnly: true,
           },
         },
         {
-          path: '/register',
-          name: 'register',
+          path: "/register",
+          name: "register",
           component: () => import("@/modules/auth/RegisterView.vue"),
           meta: {
             guestOnly: true,
           },
         },
-      ]
+      ],
     },
 
     {
-      path: '',
-      component: () => import('@/modules/layouts/Layout.vue'),
+      path: "",
+      component: () => import("@/modules/layouts/Layout.vue"),
       children: [
         {
-          path: '/targets',
-          name: 'targets',
+          path: "/targets",
+          name: "targets",
           component: TargetsView,
           meta: {
             requiresAuth: true,
           },
         },
         {
-          path: '/targets/create',
-          name: 'target-create',
-          component: () => import('@/modules/targets/TargetCreateView.vue'),
+          path: "/targets/create",
+          name: "target-create",
+          component: () => import("@/modules/targets/TargetCreateView.vue"),
           meta: {
             requiresAuth: true,
           },
         },
-      ]
+      ],
     },
   ],
-})
+});
 
 router.beforeEach((to) => {
   if (to.meta.requiresAuth && !isAuthenticated()) {
-    return { name: 'login', query: { redirect: to.fullPath } }
+    return { name: "login", query: { redirect: to.fullPath } };
   }
 
   if (to.meta.guestOnly && isAuthenticated()) {
-    return { name: 'targets' }
+    return { name: "targets" };
   }
 
-  return true
-})
+  return true;
+});
 
-export default router
-
+export default router;
