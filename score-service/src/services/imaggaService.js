@@ -2,7 +2,6 @@ import axios from 'axios';
 import FormData from 'form-data';
 
 export const getImaggaTags = async (imageUrl) => {
-  try {
     const apiKey = process.env.IMAGGA_API_KEY;
     const apiSecret = process.env.IMAGGA_API_SECRET;
 
@@ -10,7 +9,7 @@ export const getImaggaTags = async (imageUrl) => {
       throw new Error('Imagga API credentials are not configured properly.');
     }
 
-    const imageResponse = await axios.get(imageUrl, { responseType: 'stream' });
+    const imageResponse = await axios.get(targetServiceUrl + imageUrl, { responseType: 'stream' });
 
     const form = new FormData();
 
@@ -18,7 +17,7 @@ export const getImaggaTags = async (imageUrl) => {
     form.append('image', imageResponse.data, { filename: fileName });
 
     const credentials = Buffer.from(`${apiKey}:${apiSecret}`).toString('base64');
-    
+
     const imaggaResponse = await axios.post('https://api.imagga.com/v2/tags', form, {
       headers: {
         ...form.getHeaders(),
@@ -27,10 +26,6 @@ export const getImaggaTags = async (imageUrl) => {
     });
 
     return imaggaResponse.data.result.tags;
-  } catch (error) {
-    console.error('Imagga Tagging Error:', error.response?.data || error.message);
-    throw new Error('Failed to analyze image with Imagga API.');
-  }
 };
 
 export const calculateImaggaMatch = (targetTags, submissionTags) => {
