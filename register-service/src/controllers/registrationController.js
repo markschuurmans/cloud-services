@@ -43,17 +43,6 @@ export const registerForTarget = async (req, res, next) => {
   }
 };
 
-export const getRegistrationsForTarget = async (req, res, next) => {
-  try {
-    const { id: targetId } = req.params;
-
-    const registrations = await Registration.find({ targetId });
-    res.status(200).json(registrations);
-  } catch (error) {
-    next(error);
-  }
-};
-
 export const getRegistrationsByUser = async (req, res, next) => {
   try {
     const { userId } = req.params;

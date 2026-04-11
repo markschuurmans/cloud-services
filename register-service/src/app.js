@@ -5,7 +5,6 @@ import cors from 'cors';
 
 dotenv.config();
 
-import competitionRoutes from './routes/competitionRoutes.js';
 import registrationRoutes from './routes/registrationRoutes.js';
 import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from './config/swagger.js';
@@ -22,7 +21,6 @@ app.get('/health', (req, res) => {
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-app.use('/api/targets', competitionRoutes);
 app.use('/api/registrations', registrationRoutes);
 
 app.use(errorHandler);
