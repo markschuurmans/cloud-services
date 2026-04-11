@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
 import morgan from 'morgan';
 import { createProxyMiddleware } from 'http-proxy-middleware';
+import swaggerUi from 'swagger-ui-express';
 
 dotenv.config();
 
@@ -44,6 +45,16 @@ const authProxy = buildProxy(AUTH_SERVICE_URL);
 const registerProxy = buildProxy(REGISTER_SERVICE_URL);
 const targetProxy = buildProxy(TARGET_SERVICE_URL);
 const scoreProxy = buildProxy(SCORE_SERVICE_URL);
+
+const docsSources = [
+  { name: 'auth-service', url: '/api-docs/specs/auth' },
+  { name: 'register-service', url: '/api-docs/specs/register' },
+  { name: 'target-service', url: '/api-docs/specs/target' },
+  { name: 'score-service', url: '/api-docs/specs/score' },
+  { name: 'clock-service', url: '/api-docs/specs/clock' },
+  { name: 'mail-service', url: '/api-docs/specs/mail' },
+  { name: 'read-service', url: '/api-docs/specs/read' },
+];
 
 const userScopedPatterns = [
   /^\/api\/register\/user\/([^/]+)\/?$/,
@@ -97,6 +108,21 @@ const authorizeRequest = (req, res, next) => {
 app.get('/health', (req, res) => {
   res.json({ status: 'Gateway service is running', timestamp: new Date() });
 });
+
+app.use('/api-docs/specs/auth', buildProxy(AUTH_SERVICE_URL, { '^/api-docs/specs/auth': '/openapi.json' }));
+app.use('/api-docs/specs/register', buildProxy(REGISTER_SERVICE_URL, { '^/api-docs/specs/register': '/openapi.json' }));
+app.use('/api-docs/specs/target', buildProxy(TARGET_SERVICE_URL, { '^/api-docs/specs/target': '/openapi.json' }));
+app.use('/api-docs/specs/score', buildProxy(SCORE_SERVICE_URL, { '^/api-docs/specs/score': '/openapi.json' }));
+app.use('/api-docs/specs/clock', buildProxy(CLOCK_SERVICE_URL, { '^/api-docs/specs/clock': '/openapi.json' }));
+app.use('/api-docs/specs/mail', buildProxy(MAIL_SERVICE_URL, { '^/api-docs/specs/mail': '/openapi.json' }));
+app.use('/api-docs/specs/read', buildProxy(READ_SERVICE_URL, { '^/api-docs/specs/read': '/openapi.json' }));
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(null, {
+  explorer: true,
+  swaggerOptions: {
+    urls: docsSources,
+  },
+}));
 
 app.use('/api/auth/login', authProxy);
 app.use('/api/auth/register', authProxy);

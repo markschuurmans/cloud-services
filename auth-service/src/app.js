@@ -20,6 +20,10 @@ app.get('/health', (req, res) => {
     res.json({ status: 'Auth service is running', timestamp: new Date() });
 });
 
+app.get('/openapi.json', (req, res) => {
+    res.json(swaggerSpec);
+});
+
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use('/api/auth', authRoutes);
