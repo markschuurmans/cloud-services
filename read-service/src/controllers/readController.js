@@ -9,42 +9,7 @@ const getHeaders = (req) => {
     };
 };
 
-export const getActiveTargets = async (req, res, next) => {
-    try {
-        const registerUrl = process.env.REGISTER_SERVICE_URL || "";
-        const targetsRes = await axios.get(`${registerUrl}/api/targets/active`, getHeaders(req));
-        const targets = targetsRes.data;
 
-        res.json(targets);
-    } catch (error) {
-        next(error);
-    }
-};
-
-export const getTargetSummary = async (req, res, next) => {
-    try {
-        const { id } = req.params;
-        const registerUrl = process.env.REGISTER_SERVICE_URL || "";
-        const targetUrl = process.env.TARGET_SERVICE_URL || "";
-        const scoreUrl = process.env.SCORE_SERVICE_URL || "";
-
-        const [targetRes, scoresRes] = await Promise.all([
-            axios.get(`${registerUrl}/api/targets/${id}`, getHeaders(req)).catch(() => ({ data: null })),
-            axios.get(`${scoreUrl}/api/scores/ranking/target/${id}`, getHeaders(req)).catch(() => ({ data: [] }))
-        ]);
-
-        if (!targetRes.data) {
-            return res.status(404).json({ error: "Target not found" });
-        }
-
-        res.json({
-            target: targetRes.data,
-            topScores: scoresRes.data.slice(0, 10)
-        });
-    } catch (error) {
-        next(error);
-    }
-};
 
 export const getLeaderboard = async (req, res, next) => {
     try {

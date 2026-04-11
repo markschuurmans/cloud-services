@@ -2,32 +2,6 @@
  * @swagger
  * components:
  *   schemas:
- *     ActiveTarget:
- *       type: object
- *       properties:
- *         targetId:
- *           type: string
- *           description: ID of the target
- *         title:
- *           type: string
- *           description: Title of the target
- *         description:
- *           type: string
- *           description: Target description
- *         participantsCount:
- *           type: number
- *           description: Number of currently registered participants
- *     TargetSummary:
- *       type: object
- *       properties:
- *         target:
- *           type: object
- *           description: Core target details
- *         topScores:
- *           type: array
- *           description: Top scores achieved for the target
- *           items:
- *             type: object
  *     LeaderboardEntry:
  *       type: object
  *       properties:
