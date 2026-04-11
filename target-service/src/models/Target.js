@@ -25,16 +25,9 @@ import mongoose from 'mongoose';
  *         deadline:
  *           type: string
  *           format: date-time
- *         registrationOpen:
- *           type: boolean
  *         locationName:
  *           type: string
  *           description: Optionele naam van de locatie (voor aanwijzingen)
- *         tags:
- *           type: array
- *           items:
- *             type: string
- *           description: Zoektermen of hints
  *         createdAt:
  *           type: string
  *           format: date-time
@@ -66,17 +59,9 @@ const targetSchema = new mongoose.Schema({
     type: Date,
     default: null
   },
-  registrationOpen: {
-    type: Boolean,
-    default: true
-  },
   locationName: {
     type: String,
     trim: true
-  },
-  tags: {
-    type: [String],
-    default: []
   }
 }, {
   timestamps: true,

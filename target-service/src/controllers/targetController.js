@@ -4,7 +4,7 @@ import path from 'path';
 
 export const createTarget = async (req, res, next) => {
   try {
-    const { title, description, locationName, tags, deadline, registrationOpen } = req.body;
+    const { title, description, locationName, deadline } = req.body;
 
     if (!req.file) {
       return res.status(400).json({ error: 'Image file is required.' });
@@ -12,8 +12,6 @@ export const createTarget = async (req, res, next) => {
 
     const baseUrl = process.env.BASE_URL || '';
     const imageUrl = `${baseUrl}/uploads/${req.file.filename}`;
-
-    const parsedTags = typeof tags === 'string' ? tags.split(',').map(tag => tag.trim()) : tags;
 
     console.log(req.user)
 
@@ -23,9 +21,7 @@ export const createTarget = async (req, res, next) => {
       description: description || '',
       imageUrl,
       deadline: deadline ? new Date(deadline) : null,
-      registrationOpen: registrationOpen === undefined ? true : registrationOpen !== 'false',
-      locationName,
-      tags: parsedTags || []
+      locationName
     });
 
     const savedTarget = await newTarget.save();

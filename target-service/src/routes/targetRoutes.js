@@ -37,11 +37,6 @@ const router = express.Router();
  *               deadline:
  *                 type: string
  *                 format: date-time
- *               registrationOpen:
- *                 type: boolean
- *               tags:
- *                 type: string
- *                 description: Comma-separated tags
  *               image:
  *                 type: string
  *                 format: binary
