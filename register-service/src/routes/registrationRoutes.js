@@ -6,7 +6,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /api/targets/{id}/register:
+ * /api/registrations/targets/{id}/register:
  *   post:
  *     summary: Register for a target
  *     tags: [TargetRegistrations]
@@ -33,7 +33,7 @@ const router = express.Router();
  *       404:
  *         description: Target not found
  */
-router.post('/:id/register', authMiddleware, registerForTarget);
+router.post('/targets/:id/register', authMiddleware, registerForTarget);
 
 /**
  * @swagger
