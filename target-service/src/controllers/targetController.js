@@ -13,10 +13,13 @@ export const createTarget = async (req, res, next) => {
     const baseUrl = process.env.BASE_URL || '';
     const imageUrl = `${baseUrl}/uploads/${req.file.filename}`;
 
-    console.log(req.user)
+    const requesterId = req.headers['x-user-id'];
+    if (!requesterId) {
+      return res.status(401).json({ error: 'Missing authenticated user context.' });
+    }
 
     const newTarget = new Target({
-      ownerId: req.user.sub,
+      ownerId: requesterId,
       title,
       description: description || '',
       imageUrl,
@@ -43,7 +46,12 @@ export const deleteTarget = async (req, res, next) => {
       return res.status(404).json({ error: 'Target not found.' });
     }
 
-    if (target.ownerId.toString() !== req.user.sub) {
+    const requesterId = req.headers['x-user-id'];
+    if (!requesterId) {
+      return res.status(401).json({ error: 'Missing authenticated user context.' });
+    }
+
+    if (target.ownerId.toString() !== requesterId) {
       return res.status(403).json({ error: 'You do not have permission to delete this target.' });
     }
 

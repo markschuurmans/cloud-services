@@ -1,6 +1,5 @@
 import express from 'express';
 import { analyzeScore, getRanking, getScoresByUser, finalizeTargetScoring } from '../controllers/scoreController.js';
-import authMiddleware from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
@@ -37,7 +36,7 @@ const router = express.Router();
  *       409:
  *         description: Score already calculated
  */
-router.post('/scores/analyze', authMiddleware, analyzeScore);
+router.post('/scores/analyze', analyzeScore);
 
 /**
  * @swagger
@@ -93,4 +92,4 @@ export default router;
  *       200:
  *         description: Scoring finalized
  */
-router.post('/scores/target/:id/finalize', authMiddleware, finalizeTargetScoring);
+router.post('/scores/target/:id/finalize', finalizeTargetScoring);

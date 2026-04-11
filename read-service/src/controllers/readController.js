@@ -1,22 +1,13 @@
 import axios from "axios";
 
 
-const getHeaders = (req) => {
-    return {
-        headers: {
-            Authorization: req.headers.authorization
-        }
-    };
-};
-
-
 
 export const getLeaderboard = async (req, res, next) => {
     try {
         const { targetId } = req.params;
         const scoreUrl = process.env.SCORE_SERVICE_URL || "";
 
-        const scoresRes = await axios.get(`${scoreUrl}/api/scores/ranking/target/${targetId}`, getHeaders(req));
+        const scoresRes = await axios.get(`${scoreUrl}/api/scores/ranking/target/${targetId}`);
 
         const leaderboard = scoresRes.data
             .sort((a, b) => b.finalScore - a.finalScore)
@@ -35,8 +26,8 @@ export const getParticipantStats = async (req, res, next) => {
         const scoreUrl = process.env.SCORE_SERVICE_URL || "";
 
         const [regsRes, scoresRes] = await Promise.all([
-            axios.get(`${registerUrl}/api/registrations/user/${userId}`, getHeaders(req)).catch(() => ({ data: [] })),
-            axios.get(`${scoreUrl}/api/scores/user/${userId}`, getHeaders(req)).catch(() => ({ data: [] }))
+            axios.get(`${registerUrl}/api/registrations/user/${userId}`).catch(() => ({ data: [] })),
+            axios.get(`${scoreUrl}/api/scores/user/${userId}`).catch(() => ({ data: [] }))
         ]);
 
         const registrations = regsRes.data;

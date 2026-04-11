@@ -1,21 +1,9 @@
 import cron from 'node-cron';
 import axios from 'axios';
-import jwt from 'jsonwebtoken';
 import JobLog from '../models/JobLog.js';
 import { updateLastRunTime } from '../controllers/clockController.js';
 
-const generateSystemToken = () => {
-  return jwt.sign(
-    { id: 'clock-service', role: 'admin' }, 
-    process.env.JWT_SECRET, 
-    { expiresIn: '5m' }
-  );
-};
-
 export const finalizeTarget = async (targetId) => {
-  const token = generateSystemToken();
-  const headers = { Authorization: `Bearer ${token}` };
-
   const REGISTER_SERVICE = process.env.REGISTER_SERVICE_URL || '';
   const SCORE_SERVICE = process.env.SCORE_SERVICE_URL || '';
   const MAIL_SERVICE = process.env.MAIL_SERVICE_URL || '';
@@ -25,17 +13,16 @@ export const finalizeTarget = async (targetId) => {
 
     // Set target status to finished.
     await axios.patch(`${REGISTER_SERVICE}/api/targets/${targetId}/status`,
-      { status: 'finished' },
-      { headers }
+      { status: 'finished' }
     );
     console.log(`[Clock] Target ${targetId} marked as finished.`);
 
     // Trigger final scoring
-    await axios.post(`${SCORE_SERVICE}/api/scores/target/${targetId}/finalize`, {}, { headers });
+    await axios.post(`${SCORE_SERVICE}/api/scores/target/${targetId}/finalize`, {});
     console.log(`[Clock] Final scoring triggered for ${targetId}.`);
 
     // Trigger notifications
-    await axios.post(`${MAIL_SERVICE}/api/mail/target/${targetId}/notify`, {}, { headers });
+    await axios.post(`${MAIL_SERVICE}/api/mail/target/${targetId}/notify`, {});
     console.log(`[Clock] Mail notifications triggered for ${targetId}.`);
 
     // Log success
@@ -76,7 +63,6 @@ const startCronJob = () => {
 
     try {
       const REGISTER_SERVICE = process.env.REGISTER_SERVICE_URL || '';
-      
       const response = await axios.get(`${REGISTER_SERVICE}/api/targets`);
       const targets = response.data;
 

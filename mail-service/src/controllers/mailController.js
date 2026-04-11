@@ -258,12 +258,11 @@ export const notifyTargetEnd = async (req, res, next) => {
         const { targetId } = req.params;
         const registerUrl = process.env.REGISTER_SERVICE_URL || "";
         const authUrl = process.env.AUTH_SERVICE_URL || "";
-        const headers = { Authorization: req.headers.authorization };
 
-        const targetRes = await axios.get(`${registerUrl}/api/targets/${targetId}`, { headers });
+        const targetRes = await axios.get(`${registerUrl}/api/targets/${targetId}`);
         const target = targetRes.data;
 
-        const regsRes = await axios.get(`${registerUrl}/api/targets/${targetId}/registrations`, { headers });
+        const regsRes = await axios.get(`${registerUrl}/api/targets/${targetId}/registrations`);
         const registrations = regsRes.data;
 
         if (!registrations || registrations.length === 0) {
@@ -275,7 +274,7 @@ export const notifyTargetEnd = async (req, res, next) => {
 
         for (const userId of participantIds) {
             try {
-                const userRes = await axios.get(`${authUrl}/api/auth/users/${userId}`, { headers });
+                const userRes = await axios.get(`${authUrl}/api/auth/users/${userId}`);
                 const user = userRes.data;
 
                 const subject = `Target gesloten: ${target.title}`;

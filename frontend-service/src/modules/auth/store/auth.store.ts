@@ -16,8 +16,6 @@ type RegisterResponse = {
   };
 };
 
-const authServiceBaseUrl = import.meta.env.VITE_AUTH_SERVICE_URL || "http://localhost:3001";
-
 export const useAuthStore = defineStore("auth", {
   state: () => ({
     loading: false,
@@ -36,7 +34,6 @@ export const useAuthStore = defineStore("auth", {
       try {
         const data = await apiRequest<LoginResponse>("/api/auth/login", {
           method: "POST",
-          baseUrl: authServiceBaseUrl,
           body: JSON.stringify({ email, password }),
         });
 
@@ -56,7 +53,6 @@ export const useAuthStore = defineStore("auth", {
       try {
         const data = await apiRequest<RegisterResponse>("/api/auth/register", {
           method: "POST",
-          baseUrl: authServiceBaseUrl,
           body: JSON.stringify({ displayName, email, password }),
         });
 

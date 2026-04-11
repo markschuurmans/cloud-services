@@ -1,6 +1,5 @@
 import express from "express";
 import * as readController from "../controllers/readController.js";
-import authMiddleware from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
@@ -28,7 +27,7 @@ const router = express.Router();
  *               items:
  *                 $ref: '#/components/schemas/LeaderboardEntry'
  */
-router.get("/leaderboard/:targetId", authMiddleware, readController.getLeaderboard);
+router.get("/leaderboard/:targetId", readController.getLeaderboard);
 
 /**
  * @swagger
@@ -52,6 +51,6 @@ router.get("/leaderboard/:targetId", authMiddleware, readController.getLeaderboa
  *             schema:
  *               $ref: '#/components/schemas/ParticipantStats'
  */
-router.get("/participant/:userId/stats", authMiddleware, readController.getParticipantStats);
+router.get("/participant/:userId/stats", readController.getParticipantStats);
 
 export default router;

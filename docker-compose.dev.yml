@@ -41,6 +41,12 @@ services:
       - ./read-service:/usr/src/app
       - /usr/src/app/node_modules
 
+  gateway-service:
+    command: npm run dev
+    volumes:
+      - ./gateway-service:/usr/src/app
+      - /usr/src/app/node_modules
+
   frontend-service:
     build:
       context: ./frontend-service

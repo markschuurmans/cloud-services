@@ -1,7 +1,6 @@
 import express from 'express';
 import { createTarget, deleteTarget, getTargets, getTargetById } from '../controllers/targetController.js';
 import { createSubmission, deleteSubmission, getSubmissions, getSubmissionById } from '../controllers/submissionController.js';
-import authMiddleware from '../middleware/authMiddleware.js';
 import { upload } from '../config/multer.js';
 
 const router = express.Router();
@@ -48,7 +47,7 @@ const router = express.Router();
  *       400:
  *         description: Missing required fields
  */
-router.post('/targets', authMiddleware, upload.single('image'), createTarget);
+router.post('/targets', upload.single('image'), createTarget);
 
 /**
  * @swagger
@@ -104,7 +103,7 @@ router.get('/targets/:id', getTargetById);
  *       404:
  *         description: Target not found
  */
-router.delete('/targets/:id', authMiddleware, deleteTarget);
+router.delete('/targets/:id', deleteTarget);
 
 
 
@@ -143,7 +142,7 @@ router.delete('/targets/:id', authMiddleware, deleteTarget);
  *       400:
  *         description: Missing required fields or deadline passed
  */
-router.post('/submissions', authMiddleware, upload.single('image'), createSubmission);
+router.post('/submissions', upload.single('image'), createSubmission);
 
 /**
  * @swagger
@@ -205,6 +204,6 @@ router.get('/submissions/:id', getSubmissionById);
  *       404:
  *         description: Submission not found
  */
-router.delete('/submissions/:id', authMiddleware, deleteSubmission);
+router.delete('/submissions/:id', deleteSubmission);
 
 export default router;

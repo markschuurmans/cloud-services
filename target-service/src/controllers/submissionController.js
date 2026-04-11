@@ -28,9 +28,15 @@ export const createSubmission = async (req, res, next) => {
     const baseUrl = process.env.BASE_URL || '';
     const imageUrl = `${baseUrl}/uploads/${req.file.filename}`;
 
+    const participantId = req.headers['x-user-id'];
+    if (!participantId) {
+      if (req.file) fs.unlinkSync(req.file.path);
+      return res.status(401).json({ error: 'Missing authenticated user context.' });
+    }
+
     const newSubmission = new Submission({
       targetId,
-      participantId: req.user.sub,
+      participantId,
       imageUrl,
       status: 'pending'
     });
@@ -43,8 +49,7 @@ export const createSubmission = async (req, res, next) => {
       fetch(`${scoreServiceUrl}/api/scores/analyze`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': req.headers.authorization
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           submissionId: savedSubmission._id,
@@ -76,7 +81,12 @@ export const deleteSubmission = async (req, res, next) => {
       return res.status(404).json({ error: 'Submission not found.' });
     }
 
-    if (submission.participantId.toString() !== req.user.sub) {
+    const requesterId = req.headers['x-user-id'];
+    if (!requesterId) {
+      return res.status(401).json({ error: 'Missing authenticated user context.' });
+    }
+
+    if (submission.participantId.toString() !== requesterId) {
       return res.status(403).json({ error: 'You do not have permission to delete this submission.' });
     }
 

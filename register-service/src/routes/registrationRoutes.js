@@ -1,6 +1,5 @@
 import express from 'express';
 import { getRegistrationsByTarget, getRegistrationsByUser, registerForTarget } from '../controllers/registrationController.js';
-import authMiddleware from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
@@ -33,7 +32,7 @@ const router = express.Router();
  *       404:
  *         description: Target not found
  */
-router.post('/targets/:id/register', authMiddleware, registerForTarget);
+router.post('/targets/:id/register', registerForTarget);
 
 /**
  * @swagger
@@ -53,7 +52,7 @@ router.post('/targets/:id/register', authMiddleware, registerForTarget);
  *       200:
  *         description: List of user registrations
  */
-router.get('/user/:userId', authMiddleware, getRegistrationsByUser);
+router.get('/user/:userId', getRegistrationsByUser);
 
 /**
  * @swagger
@@ -73,6 +72,6 @@ router.get('/user/:userId', authMiddleware, getRegistrationsByUser);
  *       200:
  *         description: List of registrations for the target
  */
-router.get('/target/:targetId', authMiddleware, getRegistrationsByTarget);
+router.get('/target/:targetId', getRegistrationsByTarget);
 
 export default router;

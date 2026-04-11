@@ -1,6 +1,5 @@
 import express from 'express';
 import { getStatus, triggerTarget } from '../controllers/clockController.js';
-import authMiddleware from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
@@ -33,7 +32,7 @@ const router = express.Router();
  *                   type: string
  *                   format: date-time
  */
-router.get('/status', authMiddleware, getStatus);
+router.get('/status', getStatus);
 /**
  * @swagger
  * /api/clock/trigger/{id}:
@@ -55,6 +54,6 @@ router.get('/status', authMiddleware, getStatus);
  *       500:
  *         description: Execution failed
  */
-router.post('/trigger/:id', authMiddleware, triggerTarget);
+router.post('/trigger/:id', triggerTarget);
 
 export default router;

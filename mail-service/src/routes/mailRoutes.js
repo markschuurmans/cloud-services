@@ -1,5 +1,4 @@
 import express from "express";
-import authMiddleware from "../middleware/authMiddleware.js";
 import {
     sendCompetitionEndMail,
     sendRegistrationMail,
@@ -48,7 +47,7 @@ const router = express.Router();
  *       401:
  *         description: Unauthorized
  */
-router.post("/mail/registration", authMiddleware, sendRegistrationMail);
+router.post("/mail/registration", sendRegistrationMail);
 
 /**
  * @swagger
@@ -84,7 +83,7 @@ router.post("/mail/registration", authMiddleware, sendRegistrationMail);
  *       401:
  *         description: Unauthorized
  */
-router.post("/mail/target-end", authMiddleware, sendCompetitionEndMail);
+router.post("/mail/target-end", sendCompetitionEndMail);
 
 /**
  * @swagger
@@ -119,7 +118,7 @@ router.post("/mail/target-end", authMiddleware, sendCompetitionEndMail);
  *       401:
  *         description: Unauthorized
  */
-router.post("/mail/score-result", authMiddleware, sendScoreResultMail);
+router.post("/mail/score-result", sendScoreResultMail);
 
 /**
  * @swagger
@@ -154,7 +153,7 @@ router.post("/mail/score-result", authMiddleware, sendScoreResultMail);
  *       401:
  *         description: Unauthorized
  */
-router.post("/mail/winner", authMiddleware, sendWinnerMail);
+router.post("/mail/winner", sendWinnerMail);
 
 export default router;
 
@@ -174,4 +173,4 @@ export default router;
  *       202:
  *         description: Notification process initiated
  */
-router.post("/mail/target/:targetId/notify", authMiddleware, notifyTargetEnd);
+router.post("/mail/target/:targetId/notify", notifyTargetEnd);

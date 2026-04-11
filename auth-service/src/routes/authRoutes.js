@@ -1,6 +1,5 @@
 import express from 'express';
 import { register, login, profile, getUserById } from '../controllers/authController.js';
-import authMiddleware from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
@@ -96,7 +95,7 @@ router.post('/login', login);
  *       401:
  *         description: Niet geautoriseerd
  */
-router.get('/profile', authMiddleware, profile);
+router.get('/profile', profile);
 
 /**
  * @swagger
@@ -116,6 +115,6 @@ router.get('/profile', authMiddleware, profile);
  *       404:
  *         description: Gebruiker niet gevonden
  */
-router.get('/users/:id', authMiddleware, getUserById);
+router.get('/users/:id', getUserById);
 
 export default router;

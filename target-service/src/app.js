@@ -31,10 +31,6 @@ app.use(errorHandler);
 const PORT = process.env.PORT || 3003;
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/photo_prestiges_target';
 
-if (!process.env.JWT_SECRET) {
-    console.error('[Target-Service] JWT_SECRET is not defined.');
-    process.exit(1);
-}
 
 mongoose.connect(MONGO_URI)
     .then(() => {

@@ -15,15 +15,13 @@ export const analyzeScore = async (req, res, next) => {
       return res.status(409).json({ error: 'Score already calculated for this submission.' });
     }
 
-    const authHeaders = req.headers.authorization ? { 'Authorization': req.headers.authorization } : {};
-
     // Fetch submission data
     const targetServiceUrl = process.env.TARGET_SERVICE_URL || '';
-    const submissionRes = await axios.get(`${targetServiceUrl}/api/submissions/${submissionId}`, { headers: authHeaders });
+    const submissionRes = await axios.get(`${targetServiceUrl}/api/submissions/${submissionId}`);
     const submission = submissionRes.data;
 
     // Fetch target data
-    const targetRes = await axios.get(`${targetServiceUrl}/api/targets/${submission.targetId}`, { headers: authHeaders });
+    const targetRes = await axios.get(`${targetServiceUrl}/api/targets/${submission.targetId}`);
     const target = targetRes.data;
 
     // Time factor calculation based on target lifecycle.

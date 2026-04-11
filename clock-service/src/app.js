@@ -27,10 +27,6 @@ app.use(errorHandler);
 const PORT = process.env.PORT || 3005;
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/photo_prestiges_clock';
 
-if (!process.env.JWT_SECRET) {
-    console.error('[Clock-Service] JWT_SECRET is not defined.');
-    process.exit(1);
-}
 
 mongoose.connect(MONGO_URI)
   .then(() => {

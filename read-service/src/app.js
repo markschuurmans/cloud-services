@@ -26,10 +26,6 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT || 3007;
 
-if (!process.env.JWT_SECRET) {
-    console.error('[Read-Service] JWT_SECRET is not defined.');
-    process.exit(1);
-}
 
 app.listen(PORT, () => {
     console.log(`[Read-Service] Running on port ${PORT}`);

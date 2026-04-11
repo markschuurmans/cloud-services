@@ -68,9 +68,7 @@ export const login = async (req, res) => {
       displayName: user.displayName
     };
 
-    const token = jwt.sign(payload, process.env.JWT_SECRET, {
-      expiresIn: '24h'
-    });
+    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '24h' });
 
     res.status(200).json({
       message: 'Login successful',
@@ -84,7 +82,12 @@ export const login = async (req, res) => {
 
 export const profile = async (req, res) => {
   try {
-    const user = await User.findById(req.user.sub).select('-passwordHash');
+    const userId = req.headers['x-user-id'] || req.user?.sub;
+    if (!userId) {
+      return res.status(401).json({ error: 'Missing authenticated user context.' });
+    }
+
+    const user = await User.findById(userId).select('-passwordHash');
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
