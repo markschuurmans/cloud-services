@@ -55,6 +55,8 @@ router.post('/targets', upload.single('image'), createTarget);
  *   get:
  *     summary: Get all targets
  *     tags: [Targets]
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: A list of targets
@@ -67,6 +69,8 @@ router.get('/targets', getTargets);
  *   get:
  *     summary: Get a specific target by ID
  *     tags: [Targets]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -152,6 +156,8 @@ router.post('/submissions', upload.single('image'), createSubmission);
  *   get:
  *     summary: Get submissions (optional filter by targetId)
  *     tags: [Submissions]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: query
  *         name: targetId
@@ -170,6 +176,8 @@ router.get('/submissions', getSubmissions);
  *   get:
  *     summary: Get a specific submission by ID
  *     tags: [Submissions]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
