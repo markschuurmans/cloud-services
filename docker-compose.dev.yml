@@ -46,15 +46,3 @@ services:
     volumes:
       - ./gateway-service:/usr/src/app
       - /usr/src/app/node_modules
-
-  frontend-service:
-    build:
-      context: ./frontend-service
-      target: dev
-    command: sh -c "npm ci && npm run dev"
-    volumes:
-      - ./frontend-service:/usr/src/app
-      - /usr/src/app/node_modules
-    ports:
-      - "5173:5173"
-

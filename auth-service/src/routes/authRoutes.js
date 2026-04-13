@@ -22,8 +22,10 @@ const router = express.Router();
  *             properties:
  *               email:
  *                 type: string
+ *                 format: email
  *               password:
  *                 type: string
+ *                 minLength: 8
  *               displayName:
  *                 type: string
  *     responses:

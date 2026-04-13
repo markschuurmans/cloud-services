@@ -2,12 +2,22 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
 
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 export const register = async (req, res) => {
   try {
     const { email, password, displayName } = req.body;
 
     if (!email || !password || !displayName) {
       return res.status(400).json({ error: 'Email, password and displayName are required' });
+    }
+
+    if (!EMAIL_REGEX.test(email)) {
+      return res.status(400).json({ error: 'Please provide a valid email address' });
+    }
+
+    if (password.length < 8) {
+      return res.status(400).json({ error: 'Password must be at least 8 characters long' });
     }
 
     const existingUser = await User.findOne({ email });
