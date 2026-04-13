@@ -20,6 +20,7 @@ services:
     environment:
       - PORT=3001
       - MONGO_URI=mongodb://mongodb:27017/photo_prestiges_auth
+      - JWT_SECRET=your_super_secret_jwt_key_here
     depends_on:
       - mongodb
 
@@ -101,7 +102,7 @@ services:
       - "3000:3000"
     environment:
       - PORT=3000
-      - JWT_SECRET=super_secret_key
+      - JWT_SECRET=your_super_secret_jwt_key_here
       - AUTH_SERVICE_URL=http://auth-service:3001
       - REGISTER_SERVICE_URL=http://register-service:3002
       - TARGET_SERVICE_URL=http://target-service:3003

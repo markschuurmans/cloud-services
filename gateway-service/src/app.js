@@ -152,6 +152,9 @@ const authenticateToken = (req, res, next) => {
   }
 
   const token = authHeader.split(' ')[1];
+  if (!token) {
+    return res.status(401).json({ error: 'Authentication required. Invalid or missing token.' });
+  }
 
   try {
     req.user = jwt.verify(token, JWT_SECRET);
@@ -209,7 +212,8 @@ app.use('/api/auth/login', authGuard, authProxy);
 app.use('/api/auth/register', authGuard, authProxy);
 
 app.use('/api', (req, res, next) => {
-  if (req.path === '/auth/login' || req.path === '/auth/register') {
+  const normalizedPath = req.path.replace(/\/+$/, '') || '/';
+  if (normalizedPath === '/auth/login' || normalizedPath === '/auth/register') {
     return next();
   }
   return authenticateToken(req, res, () => authorizeRequest(req, res, next));
